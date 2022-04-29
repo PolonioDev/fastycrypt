@@ -1,0 +1,76 @@
+{
+  "name": "fastycrypt",
+  "version": "1.1.2",
+  "description": "An Wrapper for NaCl Encrypting library. Easy to Learn and Easy to use.",
+  "author": "DevPolonio84 <dev.polonio84@gmail.com>",
+  "main": "dist/fastycrypt.cjs.development.js",
+  "typings": "dist/fastycrypt.d.ts",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/fastycrypt.esm.js",
+      "require": "./dist/fastycrypt.cjs.development.js",
+      "default": "./dist/fastycrypt.cjs.development.js"
+    },
+    "./*": {
+      "import": "./dist/*.esm.js",
+      "require": "./dist/*.cjs.development.js",
+      "default": "./dist/*.cjs.development.js"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "aqu build",
+    "start": "aqu watch",
+    "test": "aqu test --passWithNoTests",
+    "test:watch": "aqu test --passWithNoTests --watch",
+    "test:coverage": "aqu test --silent --ci --coverage --coverageReporters=\"text\" --coverageReporters=\"text-summary\"",
+    "prepare": "aqu test --passWithNoTests && aqu build",
+    "release": "np",
+    "size": "size-limit",
+    "size:why": "size-limit --why",
+    "playground": "ts-node src/playground.ts"
+  },
+  "devDependencies": {
+    "@size-limit/preset-small-lib": "^7.0.8",
+    "@types/jest": "^27.4.1",
+    "@types/node": "^17.0.25",
+    "aqu": "0.3.2",
+    "husky": "^7.0.4",
+    "np": "^7.6.1",
+    "size-limit": "^7.0.8",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3"
+  },
+  "dependencies": {
+    "nanoid": "^3.3.3",
+    "tweetnacl": "^1.0.3"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx,json}": "npm run lint:fix"
+  },
+  "size-limit": [
+    {
+      "path": "dist/fastycrypt.cjs.development.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/fastycrypt.esm.js",
+      "limit": "10 KB"
+    }
+  ]
+}
