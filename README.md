@@ -1,12 +1,14 @@
-# <center>⚡️ FastyCrypt 🔒 - Encrypting And Signer</center>
-<center>
-  <img alt="GitHub issues" src="https://img.shields.io/github/issues/PolonioDev/fastycrypt">
-  <img alt="Snyk Vulnerabilities for GitHub Repo" src="https://img.shields.io/snyk/vulnerabilities/github/PolonioDev/fastycrypt">
-  <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/PolonioDev/fastycrypt/main">
-  <img alt="GitHub" src="https://img.shields.io/github/license/PolonioDev/fastycrypt">
-  <img alt="npm type definitions" src="https://img.shields.io/npm/types/fastycrypt">
-</center>
-<br/>
+<div align="center">
+  <h1 align="center">⚡️ FastyCrypt 🔒 - Encrypting And Signer</h1>
+  <p align="center">
+    <img alt="GitHub issues" src="https://img.shields.io/github/issues/PolonioDev/fastycrypt">
+    <img alt="Snyk Vulnerabilities for GitHub Repo" src="https://img.shields.io/snyk/vulnerabilities/github/PolonioDev/fastycrypt">
+    <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/PolonioDev/fastycrypt/main">
+    <img alt="GitHub" src="https://img.shields.io/github/license/PolonioDev/fastycrypt">
+    <img alt="npm type definitions" src="https://img.shields.io/npm/types/fastycrypt">
+  </p>
+</div>
+
 ## What is FastyCrypt? ⚡️
 FastyCrypt is a wrapper for the TweetNaCl.js module with additional features.
 It allows you to encrypt and decrypt data using symmetrical and asymmetric encryption (also known as public key encryption) and additionally allows you to sign documents so that anyone can read them and verify if they are legitimate documents of the issuer.
