@@ -6,6 +6,10 @@
   "main": "dist/fastycrypt.cjs.development.js",
   "typings": "dist/fastycrypt.d.ts",
   "license": "MIT",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/PolonioDev/fastycrypt.git"
+  },
   "files": [
     "dist"
   ],
