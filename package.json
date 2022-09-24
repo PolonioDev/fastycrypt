@@ -49,7 +49,7 @@
     "@size-limit/preset-small-lib": "^7.0.8",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.25",
-    "aqu": "0.3.2",
+    "aqu": "^0.4.3",
     "husky": "^7.0.4",
     "np": "^7.6.2",
     "size-limit": "^7.0.8",
@@ -57,6 +57,7 @@
     "typescript": "^4.6.3"
   },
   "dependencies": {
+    "got": "^12.5.0",
     "nanoid": "^3.3.3",
     "tweetnacl": "^1.0.3"
   },
