@@ -1,6 +1,6 @@
 {
   "name": "fastycrypt",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "An Wrapper for NaCl Encrypting library. Easy to Learn and Easy to use.",
   "author": "DevPolonio84 <dev.polonio84@gmail.com>",
   "main": "dist/fastycrypt.cjs.development.js",
