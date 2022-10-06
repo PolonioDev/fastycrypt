@@ -5,7 +5,7 @@ const document = {
 let Bob: secretbox;
 let Alice: secretbox;
 describe('Symmetric [secretbox]', () => {
-  beforeAll(()=>{
+  beforeAll (()=>{
     Bob = new secretbox();
     Alice = new secretbox();
   })

@@ -1,11 +1,15 @@
-import { nanoid } from 'nanoid/non-secure';
-import { box, randomBytes } from 'tweetnacl';
+import { nanoid as NonSecureNanoid } from 'nanoid/non-secure';
+import { nanoid as SecureNanoid } from 'nanoid';
+import NaCl from 'tweetnacl';
+const { box, randomBytes } = NaCl;
 
 import type {
   IFastyCryptEncoding,
   IFastyCryptKeys,
   IFastyCryptPairKeys,
   IFastyCryptUint8PairKeys,
+  IPadding,
+  IPaddingSettings
 } from './types';
 import {
   EncodingToUint8,
@@ -24,16 +28,28 @@ export default class FastyCryptAsymmetric {
   protected SignerEncodedKeys: IFastyCryptPairKeys;
   protected encoding: IFastyCryptEncoding;
   protected SubjectPublicKey?: Uint8Array;
+  protected maxPaddingLength: number = 22;
+  protected minPaddingLength: number = 0;
+  protected nanoid: typeof NonSecureNanoid | typeof SecureNanoid = NonSecureNanoid;
+
 
   constructor(
     encoding: IFastyCryptEncoding = 'base64',
     keys?: IFastyCryptKeys,
+    paddingsSettings?: IPaddingSettings
   ) {
     this.encoding = encoding;
     if (keys) {
       this.useKeys(keys);
     } else {
       this.createKeys();
+    }
+    if(paddingsSettings){
+      if(typeof paddingsSettings.maxPaddingLength == 'number')
+        this.maxPaddingLength = paddingsSettings.maxPaddingLength;
+      if(typeof paddingsSettings.minPaddingLength == 'number')
+        this.minPaddingLength = paddingsSettings.minPaddingLength;
+      this.nanoid = paddingsSettings.stronger ? SecureNanoid : NonSecureNanoid;
     }
   }
 
@@ -45,7 +61,7 @@ export default class FastyCryptAsymmetric {
     return this.SignerKeys.secretKey;
   }
 
-  get Uint8StaticSuject() {
+  get Uint8StaticSubject() {
     return this.SubjectPublicKey;
   }
 
@@ -57,10 +73,10 @@ export default class FastyCryptAsymmetric {
     return this.SignerEncodedKeys.secretKey;
   }
 
-  get staticSuject() {
-    return this.SubjectPublicKey
+  get staticSubject() {
+    return (this.SubjectPublicKey
       ? Uint8ToEncoding(this.SubjectPublicKey, this.encoding)
-      : undefined;
+      : undefined) as string | Uint8Array | null;
   }
 
   set staticSubject(publicKey: string | Uint8Array | null) {
@@ -91,6 +107,17 @@ export default class FastyCryptAsymmetric {
 
   get keys() {
     return this.SignerEncodedKeys as IFastyCryptPairKeys;
+  }
+
+  protected createPadding(): IPadding {
+    const length: number = random_int(this.minPaddingLength, this.maxPaddingLength);
+    const lengthCode: string = length >= 10 ? length.toString() : '0' + length;
+    const padding: Uint8Array = StringToUint8(this.nanoid(length));
+    return {
+      padding,
+      length,
+      lengthCode: StringToUint8(lengthCode)
+    };
   }
 
   static createKeys(
@@ -153,20 +180,14 @@ export default class FastyCryptAsymmetric {
     secretKey: Uint8Array,
   ): Uint8Array {
     const nonce = randomBytes(box.nonceLength);
-    const padingLength = random_int(0, 22);
-    const paddingCode = StringToUint8(
-      padingLength < 10 ? `0${padingLength}` : padingLength.toString(),
-    );
-    const padding = StringToUint8(nanoid(padingLength));
+    const {padding, lengthCode: paddingLength} = this.createPadding();    
     let EncryptedDoc: Uint8Array;
     const DocToEncrypt = Uint8Array.from([
       ...padding,
       ...ObjectToUint8(document),
     ]);
-
     const encrypted = box(DocToEncrypt, nonce, publicKey, secretKey);
-    EncryptedDoc = Uint8Array.from([...paddingCode, ...nonce, ...encrypted]);
-
+    EncryptedDoc = Uint8Array.from([...paddingLength, ...nonce, ...encrypted]);
     return EncryptedDoc;
   }
 
@@ -178,7 +199,7 @@ export default class FastyCryptAsymmetric {
     const paddingLengthUint8 = encryptedDocument.subarray(0, 2);
     const paddingLength = parseInt(Uint8ToString(paddingLengthUint8));
     if (
-      paddingLength !== NaN &&
+      !Number.isNaN(paddingLength) &&
       encryptedDocument.length > 2 + paddingLength + box.nonceLength
     ) {
       const nonce = encryptedDocument.subarray(2, box.nonceLength + 2);
@@ -200,10 +221,11 @@ export default class FastyCryptAsymmetric {
         ReceiverPublicKey,
         this.Uint8SecretKey,
       );
-      return Uint8ToEncoding(EncryptedDoc, this.encoding);
+      
+      return Uint8ToEncoding(EncryptedDoc, this.encoding);;
     } else {
       throw new Error(
-        "You must specifie an receiver public key to encrypt an document. If you don't want to use it, you can use ephemeral method.",
+        "You must specify an receiver public key to encrypt an document. If you don't want to use it, you can use ephemeral method.",
       );
     }
   }
@@ -219,7 +241,7 @@ export default class FastyCryptAsymmetric {
         this.Uint8SecretKey,
       );
     } else {
-      throw new Error("You must specifie an document's sender public key.");
+      throw new Error("You must specify an document's sender public key.");
     }
   }
 

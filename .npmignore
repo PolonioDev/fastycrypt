@@ -3,14 +3,18 @@
 .editorconfig
 .eslintignore
 .prettier
+mocharc.json
 aqu.config.ts
 tsconfig.json
 node_modules
 .vscode
 .github
-test
+tests
 example
 storage
+notes.md
+changelog.md
+
 
 # Sources
 src

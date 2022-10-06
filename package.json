@@ -1,82 +1,90 @@
 {
-  "name": "fastycrypt",
-  "version": "1.1.3",
-  "description": "An Wrapper for NaCl Encrypting library. Easy to Learn and Easy to use.",
-  "author": "DevPolonio84 <dev.polonio84@gmail.com>",
-  "main": "dist/fastycrypt.cjs.development.js",
-  "typings": "dist/fastycrypt.d.ts",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/PolonioDev/fastycrypt.git"
-  },
-  "files": [
-    "dist"
-  ],
-  "exports": {
-    ".": {
-      "import": "./dist/fastycrypt.esm.js",
-      "require": "./dist/fastycrypt.cjs.development.js",
-      "default": "./dist/fastycrypt.cjs.development.js"
+    "name": "fastycrypt",
+    "version": "1.1.3",
+    "description": "An Wrapper for NaCl Encrypting library. Easy to Learn and Easy to use.",
+    "author": "DevPolonio84 <dev.polonio84@gmail.com>",
+    "main": "dist/fastycrypt.cjs.development.js",
+    "typings": "dist/fastycrypt.d.ts",
+    "license": "MIT",
+    "type": "module",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PolonioDev/fastycrypt.git"
     },
-    "./*": {
-      "import": "./dist/*.esm.js",
-      "require": "./dist/*.cjs.development.js",
-      "default": "./dist/*.cjs.development.js"
-    }
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*.d.ts"
-      ]
-    }
-  },
-  "scripts": {
-    "build": "aqu build",
-    "start": "aqu watch",
-    "test": "aqu test --passWithNoTests",
-    "test:watch": "aqu test --passWithNoTests --watch",
-    "test:coverage": "aqu test --silent --ci --coverage --coverageReporters=\"text\" --coverageReporters=\"text-summary\"",
-    "prepare": "aqu test --passWithNoTests && aqu build",
-    "release": "np",
-    "size": "size-limit",
-    "size:why": "size-limit --why",
-    "playground": "ts-node src/playground.ts",
-    "patch": "npm version patch"
-  },
-  "devDependencies": {
-    "@size-limit/preset-small-lib": "^7.0.8",
-    "@types/jest": "^27.4.1",
-    "@types/node": "^17.0.25",
-    "aqu": "^0.4.3",
-    "husky": "^7.0.4",
-    "np": "^7.6.2",
-    "size-limit": "^7.0.8",
-    "ts-node": "^10.7.0",
-    "typescript": "^4.6.3"
-  },
-  "dependencies": {
-    "got": "^12.5.0",
-    "nanoid": "^3.3.3",
-    "tweetnacl": "^1.0.3"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "**/*.{js,jsx,ts,tsx,json}": "npm run lint:fix"
-  },
-  "size-limit": [
-    {
-      "path": "dist/fastycrypt.cjs.development.js",
-      "limit": "10 KB"
+    "files": [
+        "dist"
+    ],
+    "exports": {
+        ".": {
+            "import": "./dist/fastycrypt.esm.js",
+            "require": "./dist/fastycrypt.cjs.development.js",
+            "default": "./dist/fastycrypt.cjs.development.js"
+        },
+        "./*": {
+            "import": "./dist/*.esm.js",
+            "require": "./dist/*.cjs.development.js",
+            "default": "./dist/*.cjs.development.js"
+        }
     },
-    {
-      "path": "dist/fastycrypt.esm.js",
-      "limit": "10 KB"
-    }
-  ]
+    "typesVersions": {
+        "*": {
+            "*": [
+                "dist/*.d.ts"
+            ]
+        }
+    },
+    "scripts": {
+        "build": "aqu build",
+        "start": "aqu watch",
+        "lint": "aqu lint",
+        "lint:fix": "aqu lint --fix",
+        "test": "mocha",
+        "dev": "nodemon -e ts --exec mocha",
+        "test:aqu": "aqu test --passWithNoTests",
+        "test:watch": "aqu test --passWithNoTests --watch",
+        "test:coverage": "aqu test --silent --ci --coverage --coverageReporters=\"text\" --coverageReporters=\"text-summary\"",
+        "prepare": "aqu build",
+        "release": "np",
+        "size": "size-limit",
+        "size:why": "size-limit --why"
+    },
+    "devDependencies": {
+        "@size-limit/preset-small-lib": "^8.1.0",
+        "@types/chai": "^4.3.3",
+        "@types/mocha": "^10.0.0",
+        "@types/node": "^18.8.2",
+        "aqu": "0.4.3",
+        "chai": "^4.3.6",
+        "husky": "^8.0.1",
+        "lint-staged": "^13.0.3",
+        "mocha": "^10.0.0",
+        "nodemon": "^2.0.20",
+        "np": "^7.6.2",
+        "size-limit": "^8.1.0",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.8.4"
+    },
+    "dependencies": {
+        "got": "^12.5.1",
+        "nanoid": "^4.0.0",
+        "tweetnacl": "^1.0.3"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "**/*.{js,jsx,ts,tsx,json}": "npm run lint:fix"
+    },
+    "size-limit": [
+        {
+            "path": "dist/fastycrypt.cjs.development.js",
+            "limit": "10 KB"
+        },
+        {
+            "path": "dist/fastycrypt.esm.js",
+            "limit": "10 KB"
+        }
+    ]
 }

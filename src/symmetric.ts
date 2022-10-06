@@ -1,7 +1,14 @@
-import { nanoid } from 'nanoid/non-secure';
-import { randomBytes, secretbox } from 'tweetnacl';
+import { nanoid as NonSecureNanoid } from 'nanoid/non-secure';
+import { nanoid as SecureNanoid } from 'nanoid';
+import NaCl from 'tweetnacl';
+const { secretbox, randomBytes } = NaCl;
 
-import type { IFastyCryptEncoding } from './types';
+import type { 
+  IFastyCryptEncoding, 
+  IPadding, 
+  IPaddingSettings 
+} from './types';
+
 import {
   EncodingToUint8,
   ObjectToUint8,
@@ -18,16 +25,27 @@ export default class FastyCryptSymmetric {
   // @ts-ignore 2564
   protected SignerEncodedKey: string;
   protected encoding: IFastyCryptEncoding;
+  protected maxPaddingLength: number = 22;
+  protected minPaddingLength: number = 0;
+  protected nanoid: typeof NonSecureNanoid | typeof SecureNanoid = NonSecureNanoid;
 
   constructor(
     encoding: IFastyCryptEncoding = 'base64',
     key?: string | Uint8Array,
+    paddingsSettings?: IPaddingSettings
   ) {
     this.encoding = encoding;
     if (key) {
       this.useKey(key);
     } else {
       this.createKey();
+    }
+    if(paddingsSettings){
+      if(typeof paddingsSettings.maxPaddingLength == 'number')
+        this.maxPaddingLength = paddingsSettings.maxPaddingLength;
+      if(typeof paddingsSettings.minPaddingLength == 'number')
+        this.minPaddingLength = paddingsSettings.minPaddingLength;
+      this.nanoid = paddingsSettings.stronger ? SecureNanoid : NonSecureNanoid;
     }
   }
 
@@ -77,13 +95,20 @@ export default class FastyCryptSymmetric {
     );
   }
 
+  protected createPadding(): IPadding {
+    const length: number = random_int(this.minPaddingLength, this.maxPaddingLength);
+    const lengthCode: string = length >= 10 ? length.toString() : '0' + length;
+    const padding: Uint8Array = StringToUint8(this.nanoid(length));
+    return {
+      padding,
+      length,
+      lengthCode: StringToUint8(lengthCode)
+    };
+  }
+
   encrypt(document: any): string {
     const nonce = randomBytes(secretbox.nonceLength);
-    const padingLength = random_int(0, 22);
-    const paddingCode = StringToUint8(
-      padingLength < 10 ? `0${padingLength}` : padingLength.toString(),
-    );
-    const padding = StringToUint8(nanoid(padingLength));
+    const {padding, lengthCode: paddingLength} = this.createPadding();
     let EncryptedDoc: Uint8Array;
     const DocToEncrypt = Uint8Array.from([
       ...padding,
@@ -91,7 +116,7 @@ export default class FastyCryptSymmetric {
     ]);
 
     const encrypted = secretbox(DocToEncrypt, nonce, this.Uint8SecretKey);
-    EncryptedDoc = Uint8Array.from([...paddingCode, ...nonce, ...encrypted]);
+    EncryptedDoc = Uint8Array.from([...paddingLength, ...nonce, ...encrypted]);
 
     return Uint8ToEncoding(EncryptedDoc, this.encoding);
   }
@@ -105,7 +130,7 @@ export default class FastyCryptSymmetric {
     const PaddingCode = Uint8ToString(paddingLengthUint8);
     const paddingLength = parseInt(PaddingCode);
     if (
-      paddingLength !== NaN &&
+      !Number.isNaN(paddingLength) &&
       Uint8EncryptedDocument.length > 2 + paddingLength + secretbox.nonceLength
     ) {
       const nonce = Uint8EncryptedDocument.subarray(2, secretbox.nonceLength + 2);

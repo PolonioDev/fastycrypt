@@ -1,4 +1,5 @@
-import { sign } from 'tweetnacl';
+import NaCl from 'tweetnacl';
+const { sign } = NaCl;
 
 import type {
   IFastyCryptEncoding,
@@ -54,10 +55,10 @@ export default class FastyCryptSigner {
     return this.SignerEncodedKeys.secretKey;
   }
 
-  get staticSuject() {
+  get staticSubject() {
     return this.SubjectPublicKey
       ? Uint8ToEncoding(this.SubjectPublicKey, this.encoding)
-      : undefined;
+      : null;
   }
 
   static from(
