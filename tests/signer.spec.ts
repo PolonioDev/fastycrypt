@@ -33,7 +33,14 @@ describe('Signer [sign]', () => {
   it('signer.getSignFor', () => {
     const encryptedDoc = Bob.sign(document);
     const signature = Alice.getSignFor(encryptedDoc);
-    const isDocumentSignedByBob = Alice.verify(document, signature as string, Bob.publicKey);
+    const isDocumentSignedByBob = Alice.verify(document, signature, Bob.publicKey);
+    expect(isDocumentSignedByBob, 'Everyone should be able to obtain a document\'s signature.')
+      .to.be.true;
+  });
+
+  it('signer.create vs signer.verify', () => {
+    const signature = Bob.create(document);
+    const isDocumentSignedByBob = Alice.verify(document, signature, Bob.publicKey);
     expect(isDocumentSignedByBob, 'Everyone should be able to obtain a document\'s signature.')
       .to.be.true;
   });
@@ -45,4 +52,10 @@ describe('Signer [sign]', () => {
         .to.be.true;
   });
 
+  it('signer.readAnyway', ()=>{
+    const signed = Bob.sign(document);
+    const obj = Alice.readAnyway(signed);
+    expect(obj, 'The signed document must be equal to initial document.')
+      .to.be.deep.equals(document);
+  })
 });

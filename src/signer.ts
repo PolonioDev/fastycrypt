@@ -10,6 +10,7 @@ import type {
 import {
   EncodingToUint8,
   ObjectToUint8,
+  Uint8From,
   Uint8ToEncoding,
   Uint8ToObject,
 } from './utils';
@@ -93,58 +94,58 @@ export default class FastyCryptSigner {
     };
   }
 
+  protected set Uint8PairKeys(keys: IFastyCryptUint8PairKeys) {
+    const {publicKey, secretKey} = keys;
+    const {publicKeyLength, secretKeyLength} = sign;
+
+    let SignerKeys: IFastyCryptUint8PairKeys;
+    let SignerEncodedKeys: IFastyCryptPairKeys;
+    SignerEncodedKeys = {
+      secretKey: Uint8ToEncoding(secretKey, this.encoding),
+      publicKey: Uint8ToEncoding(publicKey, this.encoding),
+    };
+    SignerKeys = keys as IFastyCryptUint8PairKeys;
+    
+    if(publicKey.length !== publicKeyLength || secretKey.length !== secretKeyLength)
+      throw new Error(
+        'Your keys are invalid, please, use an valid keys or execute "createKeys" method to create a new keys.',
+      );
+
+    this.SignerKeys = SignerKeys;
+    this.SignerEncodedKeys = SignerEncodedKeys;
+  }
+
   set keys(keys: IFastyCryptKeys) {
-    this.useKeys(keys);
+    const {publicKey, secretKey} = keys;
+    if (typeof publicKey === 'string' && typeof secretKey === 'string') {
+      const Uint8Keys: IFastyCryptUint8PairKeys = {
+        secretKey: EncodingToUint8(secretKey, this.encoding),
+        publicKey: EncodingToUint8(publicKey, this.encoding),
+      };
+      this.Uint8PairKeys = Uint8Keys;
+    }
+    if(typeof publicKey === 'object' && typeof secretKey === 'object'){
+      this.Uint8PairKeys = keys as IFastyCryptUint8PairKeys;
+    } 
   }
 
   useKeys(keys: IFastyCryptKeys | string): void {
     if (typeof keys == 'string') {
       this.staticSubject = keys;
     } else if (typeof keys.publicKey == 'string') {
-      const Uint8Keys = {
-        secretKey: EncodingToUint8(keys.secretKey as string, this.encoding),
-        publicKey: EncodingToUint8(keys.publicKey, this.encoding),
-      };
-      if (
-        Uint8Keys.publicKey.length == sign.publicKeyLength &&
-        (Uint8Keys.secretKey == undefined ||
-          Uint8Keys.secretKey.length == sign.secretKeyLength)
-      ) {
-        this.SignerEncodedKeys = keys as IFastyCryptPairKeys;
-        this.SignerKeys = Uint8Keys;
-        return;
-      }
-    } else if (
-      keys.publicKey.length == sign.publicKeyLength &&
-      (keys.secretKey == undefined ||
-        keys.secretKey.length == sign.secretKeyLength)
-    ) {
-      this.SignerKeys = keys as IFastyCryptUint8PairKeys;
-      this.SignerEncodedKeys = {
-        secretKey: Uint8ToEncoding(keys.secretKey as Uint8Array, this.encoding),
-        publicKey: Uint8ToEncoding(keys.publicKey, this.encoding),
-      };
-      return;
+      this.keys = keys;
     }
-    throw new Error(
-      'Your keys are invalid, please, use an valid keys or execute "createKeys" method to create a new keys.',
-    );
   }
 
   set staticSubject(publicKey: string | Uint8Array | null) {
     if (publicKey) {
-      let Uint8PublicKey: Uint8Array;
-      if (typeof publicKey == 'string') {
-        Uint8PublicKey = EncodingToUint8(publicKey, this.encoding);
-      } else {
-        Uint8PublicKey = publicKey;
-      }
+      let Uint8PublicKey: Uint8Array = typeof publicKey == 'string' 
+        ? EncodingToUint8(publicKey, this.encoding)
+        : publicKey;
 
-      if (Uint8PublicKey.length !== sign.publicKeyLength) {
+      if (Uint8PublicKey.length !== sign.publicKeyLength)
         throw new Error('Invalid Subject Public Key');
-      } else {
-        this.SubjectPublicKey = Uint8PublicKey;
-      }
+      this.SubjectPublicKey = Uint8PublicKey;
     } else {
       this.SubjectPublicKey = undefined;
     }
@@ -161,18 +162,14 @@ export default class FastyCryptSigner {
     signedDocument: Uint8Array,
     senderPublicKey?: string,
   ): Uint8Array | null {
-    if (signedDocument.length > sign.signatureLength) {
-      const publicKey = senderPublicKey
-        ? EncodingToUint8(senderPublicKey, this.encoding)
-        : this.SubjectPublicKey
-        ? this.SubjectPublicKey
-        : this.SignerKeys.publicKey;
-
-      const document = sign.open(signedDocument, publicKey);
-      return document ? document : null;
-    } else {
+    if (signedDocument.length <= sign.signatureLength) 
       throw new Error('Invalid signed Document.');
-    }
+    const publicKey = senderPublicKey
+      ? EncodingToUint8(senderPublicKey, this.encoding)
+      : this.SubjectPublicKey
+      ??this.SignerKeys.publicKey
+
+    return sign.open(signedDocument, publicKey);
   }
 
   read(signedDocument: string, senderPublicKey?: string): any {
@@ -181,6 +178,14 @@ export default class FastyCryptSigner {
       senderPublicKey,
     );
     return document ? Uint8ToObject(document) : null;
+  }
+
+  readAnyway(signedDocument: string): any {
+    if (signedDocument.length <= sign.signatureLength) 
+      throw new Error('Invalid Signed Document');
+    const document = EncodingToUint8(signedDocument, this.encoding)
+    .subarray(sign.signatureLength);
+    return Uint8ToObject(document);
   }
 
   create(document: any): string {
@@ -194,8 +199,7 @@ export default class FastyCryptSigner {
     const publicKey = senderPublicKey
       ? EncodingToUint8(senderPublicKey, this.encoding)
       : this.SubjectPublicKey
-      ? this.SubjectPublicKey
-      : this.SignerKeys.publicKey;
+      ??this.SignerKeys.publicKey;
 
     return sign.detached.verify(
       ObjectToUint8(document),
@@ -206,26 +210,23 @@ export default class FastyCryptSigner {
 
   verifyDocument(document: string, senderPublicKey?: string) {
     const Uint8Document = EncodingToUint8(document, this.encoding);
-    if (Uint8Document.length > sign.signatureLength) {
-      const DecryptedDoc = this.readToUint8(Uint8Document, senderPublicKey);
+    const DecryptedDoc = this.readToUint8(Uint8Document, senderPublicKey);
       return DecryptedDoc !== null;
-    } else {
-      throw new Error('Invalid Signed Document.');
-    }
   }
 
-  getSignFor(signedDocument: string | Uint8Array): string | Uint8Array {
-    const isUsingString = typeof signedDocument === 'string';
-    const document = isUsingString
-      ? EncodingToUint8(signedDocument as string, this.encoding)
-      : (signedDocument as Uint8Array);
-    if (document.length > sign.signatureLength) {
-      const Uint8Sign = document.subarray(0, sign.signatureLength);
-      return isUsingString
-        ? Uint8ToEncoding(Uint8Sign, this.encoding)
-        : Uint8Sign;
-    } else {
+  protected getUint8SignFor(signedDocument: Uint8Array): Uint8Array {
+    if (signedDocument.length <= sign.signatureLength) 
       throw new Error('Invalid Signed Document');
-    }
+
+    return signedDocument
+      .subarray(0, sign.signatureLength);
+  }
+
+  getSignFor(signedDocument: string): string {
+    let document: Uint8Array = EncodingToUint8(signedDocument, this.encoding);
+
+    const Uint8Sign = this.getUint8SignFor(document);
+    const EncodedSign = Uint8ToEncoding(Uint8Sign, this.encoding);
+    return EncodedSign;
   }
 }

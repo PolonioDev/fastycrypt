@@ -11,5 +11,18 @@
 - Problemas de compatibilidad con Jest en Aqu al realizar los test: **Se remplazó o JEST por MOCHA + CHAI**
 
 # Pendientes
-- Agregar la documentación de las nuevas implementaciones
+- Agregar la documentación de las nuevas implementaciones: **Agregada**
 - Cambiar la función generadora de paddings mediante "crypto-js": **No se cambiará debido a que la seguridad la garantiza el nonce, en cambio del padding agregado se usa unicamente para generar salidas de tamaños variables, por lo cual es innecesario**
+
+- Optimizar el codigo para que sea menos complejo **optimizado**
+- Actualizar documentacion de las nuevas implementaciones
+- Optimizar el modulo de firmas **optimizado**
+- Agregar Funcion Read Independientemente de si la firma es valida **Se Creó sign.readAnyway**
+- Documentar sing.readAnyway y las nuevas Interfaces
+
+=======
+
+- Se agregó IDocumentSegment 
+- se creo el metodo segmentDocument en utils
+- Se optimizaron las funciones para reducir su complegidad y se segmentaron algunas funciones mas especificas
+- Se Creó sign.readAnyway

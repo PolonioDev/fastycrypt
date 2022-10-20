@@ -8,4 +8,4 @@
       "experimental-vm-modules",
       "no-warnings=ExperimentalWarning"
     ]
-  }
+}
