@@ -1,4 +1,5 @@
 import NaCl from 'tweetnacl';
+import { ISymmetricSettings } from './types';
 const { secretbox, randomBytes } = NaCl;
 
 import type { 
@@ -25,11 +26,8 @@ export default class FastyCryptSymmetric {
   protected encoding: IFastyCryptEncoding;
   protected paddingSetup: IPaddingSetUp;
 
-  constructor(
-    encoding: IFastyCryptEncoding = 'base64',
-    key?: string | Uint8Array,
-    paddingSettings?: IPaddingSettings
-  ) {
+  constructor(settings: ISymmetricSettings={}) {
+    const {encoding='base64', key, paddingSettings} = settings;
     this.encoding = encoding;
     if (key) {
       this.useKey(key);
@@ -39,8 +37,8 @@ export default class FastyCryptSymmetric {
     this.paddingSetup = setupNanoid(paddingSettings);
   }
 
-  static from(key: string, encoding: IFastyCryptEncoding = 'base64'): FastyCryptSymmetric {
-    return new FastyCryptSymmetric(encoding, key);
+  static from(key: string, settings?: ISymmetricSettings): FastyCryptSymmetric {
+    return new FastyCryptSymmetric({key, ...(settings??{})});
   }
 
   get secretKey() {

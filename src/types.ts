@@ -33,3 +33,15 @@ export type IPaddingSetUp = {
   maxLength: number,
   nanoid: INanoid
 };
+
+export type IAsymmetricSettings = {
+  encoding?: IFastyCryptEncoding,
+  keys?: IFastyCryptKeys,
+  paddingSettings?: IPaddingSettings
+};
+
+export type ISymmetricSettings = {
+  encoding?: IFastyCryptEncoding,
+  key?: string | Uint8Array,
+  paddingSettings?: IPaddingSettings
+};

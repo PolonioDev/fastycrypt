@@ -26,3 +26,8 @@
 - se creo el metodo segmentDocument en utils
 - Se optimizaron las funciones para reducir su complegidad y se segmentaron algunas funciones mas especificas
 - Se Creó sign.readAnyway
+
+
+==== 
+Se agrega IAsymmetricSettings y ISymmetricSettings
+Se modifica stric.from en asymmetric y symmetric

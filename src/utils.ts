@@ -69,7 +69,7 @@ export function random_int(min: number, max: number): number {
 }
 
 export function setupNanoid(settings?: IPaddingSettings): IPaddingSetUp {
-  const {minLength=0, maxLength=22, dictionary=undefined, stronger=false} = settings??{};
+  const {minLength=5, maxLength=22, dictionary=undefined, stronger=false} = settings??{};
   let setup = {
     minLength,
     maxLength,

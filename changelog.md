@@ -24,4 +24,6 @@
 8. New FastyCrypt Type: **INanoid**
 9. New FastyCrypt Type: **IPadding**
 10. New FastyCrypt Type: **IPaddingSetUp**
+11. New FastyCrypt Type: **IAsymmetricSettings**
+12. New FastyCrypt Type: **ISymmetricSettings**
  ---

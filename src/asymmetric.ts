@@ -1,5 +1,4 @@
 import NaCl from 'tweetnacl';
-import {IPaddingSetUp } from './types';
 const { box, randomBytes } = NaCl;
 
 import type {
@@ -7,7 +6,8 @@ import type {
   IFastyCryptKeys,
   IFastyCryptPairKeys,
   IFastyCryptUint8PairKeys,
-  IPaddingSettings
+  IPaddingSetUp, 
+  IAsymmetricSettings
 } from './types';
 import {
   createPadding,
@@ -29,12 +29,10 @@ export default class FastyCryptAsymmetric {
   protected SubjectPublicKey?: Uint8Array;
   protected paddingSetup: IPaddingSetUp;
 
-  constructor(
-    encoding: IFastyCryptEncoding = 'base64',
-    keys?: IFastyCryptKeys,
-    paddingSettings?: IPaddingSettings
-  ) {
+  constructor(settings: IAsymmetricSettings={}) {
+    const {encoding='base64', keys, paddingSettings} = settings;
     this.encoding = encoding;
+
     if (keys) {
       this.useKeys(keys);
     } else {
@@ -83,20 +81,15 @@ export default class FastyCryptAsymmetric {
     }
   }
 
-  static from(
-    keys: IFastyCryptKeys,
-    encoding: IFastyCryptEncoding = 'base64',
-  ): FastyCryptAsymmetric {
-    return new FastyCryptAsymmetric(encoding, keys);
+  static from(keys: IFastyCryptKeys, settings?: IAsymmetricSettings): FastyCryptAsymmetric {
+    return new FastyCryptAsymmetric({keys, ...(settings??{})});
   }
 
   get keys() {
     return this.SignerEncodedKeys as IFastyCryptPairKeys;
   }
 
-  static createKeys(
-    encoding: IFastyCryptEncoding = 'base64',
-  ): IFastyCryptPairKeys {
+  static createKeys(encoding: IFastyCryptEncoding = 'base64'): IFastyCryptPairKeys {
     const { secretKey, publicKey } = box.keyPair() as IFastyCryptUint8PairKeys;
     return {
       secretKey: Uint8ToEncoding(secretKey, encoding),
@@ -160,12 +153,15 @@ export default class FastyCryptAsymmetric {
     secretKey: Uint8Array,
   ): Uint8Array {
     const nonce = randomBytes(box.nonceLength);
-    const {padding, lengthCode: paddingLength} = createPadding(this.paddingSetup);    
+    // const {padding, lengthCode: paddingLength, length} = createPadding(this.paddingSetup);
+    const {padding, lengthCode: paddingLength, length} = createPadding(this.paddingSetup);
     let EncryptedDoc: Uint8Array;
-    const DocToEncrypt = Uint8Array.from([
+    let DocToEncrypt = Uint8Array.from([
       ...padding,
       ...ObjectToUint8(document),
     ]);
+    
+    // DocToEncrypt = shuffle(DocToEncrypt, nonce.toString())
     const encrypted = box(DocToEncrypt, nonce, publicKey, secretKey);
     EncryptedDoc = Uint8Array.from([...paddingLength, ...nonce, ...encrypted]);
     return EncryptedDoc;

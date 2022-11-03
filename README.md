@@ -24,12 +24,12 @@ FastyCrypt abstracts you from using data of type Uint8Array and implements metho
   - [Installation](#installation)
   - [Usage](#usage)
 - [Asymmetric Encryption (Public Key Encryption)](#asymmetric-encryption-public-key-encryption)
-  - [new FastyCryptAsymmetric(encoding, keys, paddingSettings)](#new-fastycryptasymmetricencoding-keys-paddingsettings)
+  - [new FastyCryptAsymmetric(settings)](#new-fastycryptasymmetricsettings)
   - [get keys: IFastyCryptPairKeys](#keys-ifastycryptpairkeys)
   - [createKeys()](#createkeys-ifastycryptpairkeys)
   - [FastyCryptAsymmetric.createKeys(encoding)](#fastycryptasymmetriccreatekeysencoding-static-method)
   - [useKey(keys)](#usekeyskeys-void)
-  - [FastyCryptAsymmetric.from(keys, encoding)](#fastycryptasymmetricfromkeys-encoding-fastycryptasymmetric)
+  - [FastyCryptAsymmetric.from(keys, settings)](#fastycryptasymmetricfromkeys-settings-fastycryptasymmetric)
   - [encrypt(document, receiverPublicKey)](#encryptdocument-receiverpublickey-string)
   - [decrypt(encryptedDocument, senderPublicKey)](#decryptencrypteddocument-senderpublickey-string--any)
   - [ephemeralEncrypt(document, receiverPublicKey)](#ephemeralencryptdocument-receiverpublickey-string)
@@ -43,12 +43,12 @@ FastyCrypt abstracts you from using data of type Uint8Array and implements metho
   - [set staticSubject: string|Uint8Array|null](#set-staticsubject-stringuint8arraynull)
   - [Examples](#examples-for-asymmetric-encryption)
 - [Symmetric Encryption](#symmetric-encryption)
-  - [new FastyCryptSymmetric(encoding, key)](#new-fastycryptsymmetricencoding-key-paddingsettings)
+  - [new FastyCryptSymmetric(settings)](#new-fastycryptsymmetricsettings)
   - [get key: string](#get-key-string)
   - [createKey(): string](#createkey-string)
   - [FastyCryptSymmetric.createKey(encoding)](#fastycryptsymmetriccreatekeyencoding-string-static-method)
   - [useKey(key)](#usekeykey-void)
-  - [FastyCryptSymmetric.from(key, encoding)](#fastycryptsymmetricfromkey-encoding-fastycryptsymmetric)
+  - [FastyCryptSymmetric.from(key, settings)](#fastycryptsymmetricfromkey-settings-fastycryptsymmetric)
   - [encrypt(document)](#encryptdocument-string)
   - [decrypt(encryptedDocument)](#decryptencrypteddocument-string--any)
   - [Examples](#examples-for-symmetric-encryption)
@@ -58,9 +58,10 @@ FastyCrypt abstracts you from using data of type Uint8Array and implements metho
   - [createKeys()](#createkeys-ifastycryptpairkeys)
   - [FastyCryptSymmetric.createKeys(encoding)](#fastycryptsymmetriccreatekeysencoding-ifastycryptpairkeys-static-method)
   - [useKeys(keys)](#usekeyskeys-void-1)
-  - [FastyCryptSymmetric.from(keys, encoding)](#fastycryptsymmetricfromkeys-encoding-fastycryptsigner)
+  - [FastyCryptSigner.from(keys, encoding)](#fastycryptsignerfromkeys-encoding-fastycryptsigner)
   - [sign(document)](#signdocument-string)
   - [read(signedDocument, senderPublicKey)](#readsigneddocument-senderPublicKey-any)
+  - [readAnyway(signedDocument): any](#readanywaysigneddocument-any)
   - [create(document)](#createdocument-string)
   - [verify(signedDocument, signature, senderPublicKey)](#verifysigneddocument-signature-senderpublickey-boolean)
   - [verifyDocument(signedDocument, signature, senderPublicKey)](#verifydocumentsigneddocument-signature-senderpublickey-boolean)
@@ -117,79 +118,60 @@ import FastyCryptSigner from 'fastycrypt/signer';
 It allows you to encrypt and decrypt messages using a public key that you can share in insecure environments, such as a web client or REST API. The messages can also be candidate objects to be transformed into JSON format, these objects in combination with the plain texts in this module are called documents. By using this encryption method, it creates a secure means of communication where each document is protected, signed by the sender and addressed to a single recipient, if the document is modified in the slightest, the document is corrupted and cannot be decrypted, indicating that the received document was not written by the intended sender.<br/>
 This implementation has some additional functions with respect to TweetNaCl, among them I tried a high-level api to send messages with disposable encoding, different nonce for each message and padding to add more security, the padding is used to generate output of random lengths.
 <br/>
+
 [Go now to the example](#examples-for-asymmetric-encryption)
+
 ```js
 import FastyCryptAsymmetric from 'fastycrypt/asymmetric';
 ```
 
-### **new FastyCryptAsymmetric(encoding, keys, paddingSettings)**
-The constructor method allows you to set data that is repetitive in the encryption process. If it don't received keys, it generate it.
+### **new FastyCryptAsymmetric(settings)**
+The constructor method allows you to set data that is repetitive in the encryption process. If it don't received keys, it generate a new pair of keys.
 By default, FastCrypt uses the recommended settings for padding.
 
-|    Parameter     |                  Type                               |  Default  |
-|------------------|-----------------------------------------------------|-----------|
-|     encoding     |      [IFastyCryptEncoding](#fastycrypt-types)       |   base64  |
-|       keys       |        {secretKey: string, publicKey:string}        |   null    |
-| paddingSettings |                  IPaddingSettings                   | undefined |
+#### **Settings Object Structure**
+| Attribute Name  |                  Type                     |             Default Value          | required |
+|-----------------|-------------------------------------------|------------------------------------|----------|
+|     encoding    |[IFastyCryptEncoding](#ifastycryptencoding)|                base64              | false    |
+|       keys      |   [IFastyCryptKeys](#ifastycryptkeys)     |               undefined            | false    |
+| paddingSettings |  [IPaddingSettings](#ipaddingsettings)    |[default](#default-padding-settings)| false    |
 
-#### **DEFAULT PADDING SETTINGS**
-```js
-// Clarification:
-// Padding is used to randomize the output size of
-// encrypted messages, which makes the use of strong
-// content for padding unnecessary. In any case, the 
-// use of this function is made available to you if 
-// you consider it necessary, but remember that each
-// message already includes a random component in 
-// itself known as a "nonce" that uses a secure 
-// randomization mechanism.
-let recommendedSettings = {
-  strong: false,
-  minPaddingLength: 0,
-  maxPaddingLength: 22
-};
-```
-**NOTE:**
-You can replace the keys in string with keys in Uint8Array. <br/>
-
-### **keys: [IFastyCryptPairKeys](#fastycrypt-types)**
+### **keys: [IFastyCryptPairKeys](#ifastycryptpairkeys)**
 Returns the current keys in use.
 
-### **createKeys(): [IFastyCryptPairKeys](#fastycrypt-types)**
+### **createKeys(): [IFastyCryptPairKeys](#ifastycryptpairkeys)**
 Creates a pair of new keys and returns them encrypted in the format specified in the constructor.
 
-### FastyCryptAsymmetric.createKeys(encoding) (Static Method)
+### **FastyCryptAsymmetric.createKeys(encoding)** (Static Method)
 Creates a pair of new keys and returns them encrypted in the format specified (base64 by default).
-The **encoding** param accepts the [Buffer's encoding list](#the-encodings-param-accepts)
 
 ### **useKeys(keys): void**
 Specified an Key or Keys to use.
 
-| Parameter |                      Type                  |
-|-----------|--------------------------------------------|
-|    keys   | [IFastyCryptKeys](#fastycryptsigner-types) |
+| Parameter |               Type                  | required |
+|-----------|-------------------------------------|----------|
+|    keys   | [IFastyCryptKeys](#ifastycryptkeys) | true     |
 
 **NOTE:**
 You can replace the keys in string with keys in Uint8Array. <br/>
 
-### **FastyCryptAsymmetric.from(keys, encoding): FastyCryptAsymmetric**
+### **FastyCryptAsymmetric.from(keys, settings): FastyCryptAsymmetric**
 It creates an instance of FastyCryptAsymmetric and return it.
 
-| Parameter |                  Type                                |  Default |
-|-----------|------------------------------------------------------|----------|
-|   keys    |       {secretKey: string, publicKey:string}          | required |
-| encoding  |     [IFastyCryptEncoding](#fastycrypt-types)         |  base64  |
-| encoding  |     [IFastyCryptEncoding](#fastycrypt-types)         |  base64  |
+| Parameter Name  |                        Type                 | Default Value | required |
+|-----------------|---------------------------------------------|---------------|----------|
+|       keys      |      [IFastyCryptKeys](#ifastycryptkeys)    |    undefined  | true     |
+|     settings    | [IAsymmetricSettings](#iasymmetricsettings) |     default   | false    |
 
 
 ### **encrypt(document, receiverPublicKey): string**
 Encrypt your document using the recipient's public key. The document can be a string or an object suitable for transcribing into JSON format. Returns a string encrypted using the encoding specified in the constructor.<br/>
 It throws an error when secretKey is not specified.
 
-| Parameter         |     Type      |
-|-------------------|---------------|
-| document          | string or any |
-| receiverPublicKey |     string    |
+| Parameter         |     Type      | required |
+|-------------------|---------------|----------|
+| document          | string or any | true     |
+| receiverPublicKey |     string    | false    |
 
 **NOTE:**
 If you don't specify the "receiverPublicKey" parameter it will try to use the value you
@@ -199,10 +181,10 @@ specified when you set staticSubject setter. <br/>
 It decrypts an encrypted document and returns the original document.<br/>
 It throws an error when secretKey is not specified.
 
-| Parameter        |        Type       |
-|------------------|-------------------|
-| encryptedDocument |       string      |
-| senderPublicKey  | string (optional) |
+|  Parameter        |        Type       | required |
+|-------------------|-------------------|----------|
+| encryptedDocument |       string      | true     |
+| senderPublicKey   | string (optional) | false    |
 
 **NOTE:**
 If you don't specify the "senderPublicKey" parameter it will try to use the value you
@@ -215,10 +197,10 @@ for transcribing into JSON format. You can set the public key of the re Returns 
 string encrypted using the encoding specified in the constructor.<br/>
 It throws an error when secretKey is not specified.
 
-| Parameter         |     Type      |
-|-------------------|---------------|
-| document          | string or any |
-| receiverPublicKey |     string    |
+| Parameter         |     Type      | required |
+|-------------------|---------------|----------|
+| document          | string or any | false    |
+| receiverPublicKey |     string    | false    |
 
 **NOTE:**
 If you don't specify the "receiverPublicKey" parameter it will try to use the value you
@@ -228,9 +210,9 @@ specified when you set staticSubject setter. <br/>
 It decrypts an encrypted document and returns the original document.<br/>
 It throws an error when secretKey is not specified.
 
-| Parameter        |        Type       |
-|------------------|-------------------|
-| encryptedDocument |       string      |
+| Parameter        |        Type       | required |
+|------------------|-------------------|----------|
+| encryptedDocument |       string     | true     |
 
 ### **get Uint8PublicKey: Uint8Array**
 Returns the public key of the instance as a Uint8Array
@@ -247,7 +229,7 @@ Returns the public key of the static subject as a string in the format of the en
 ### **set staticSubject: string|Uint8Array|null**
 Sets as static the public key of a subject that will be used frequently to avoid the need to specify it every time it is required to read or validate signatures. If you specify it you can still read and validate other subjects' signatures simply by specifying it in the read or verify methods. Additionally you can set it to null to remove this public key, which will cause the default behavior when a sender's public key is not specified to use the current instance's own public key.
 
-### EXAMPLES FOR ASYMMETRIC ENCRYPTION
+### **EXAMPLES FOR ASYMMETRIC ENCRYPTION**
 
 In this example we pose a hypothetical conversation between the CIA and the President
 to understand how the encryption and decryption mechanism works.
@@ -501,6 +483,7 @@ console.log('Rehydration Successfully: ', testDecryptedMsg === test_msg);
 It allows you to encrypt data using a unique and extremely confidential key. Data encrypted by this method can only be decrypted by the sender of the message. The messages can also be objects that are candidates to be transformed into JSON format, these objects in combination with the plain texts in this module we call documents.
 Each document, internally, is encrypted using a unique nonce or initialization vector for each message and which are also accompanied by a padding used to vary the output length of the encrypted document to add an extra degree of security.
 <br/>
+
 [Go now to the example](#examples-for-symmetric-encryption)
 
 Importation
@@ -508,74 +491,59 @@ Importation
 import FastyCryptSymmetric from 'fastycrypt/symmetric';
 ```
 
-### **new FastyCryptSymmetric(encoding, key, paddingSettings)**
+### **new FastyCryptSymmetric(settings)**
 The constructor method allows you to set data that is repetitive in the encryption process.
 If it don't received a key, it generate it.
 
-|     Parameter    |                  Type                               | Default      |
-|------------------|-----------------------------------------------------|--------------|
-|     encoding     |      [IFastyCryptEncoding](#fastycrypt-types)       |    base64    |
-|       key        |                  string or Uint8Array               |  undefined   |
-| paddingSettings |                  IPaddingSettings                   |  undefined   |
+#### **Settings Object Structure**
+| Attribute Name  |                    Type                   |             Default Value          | required |
+|-----------------|-------------------------------------------|------------------------------------|----------|
+|     encoding    |[IFastyCryptEncoding](#ifastycryptencoding)|                base64              | false    |
+|       key       |           string or Uint8Array            |               undefined            | false    |
+| paddingSettings |  [IPaddingSettings](#ipaddingsettings)    |[default](#default-padding-settings)| false    |
 
-#### **DEFAULT PADDING SETTINGS**
-```js
-// Clarification:
-// Padding is used to randomize the output size of
-// encrypted messages, which makes the use of strong
-// content for padding unnecessary. In any case, the 
-// use of this function is made available to you if 
-// you consider it necessary, but remember that each
-// message already includes a random component in 
-// itself known as a "nonce" that uses a secure 
-// randomization mechanism.
-let recommendedSettings = {
-  strong: false,
-  minPaddingLength: 0,
-  maxPaddingLength: 22
-};
-```
+
 ### **get key: string**
 Returns the current key in use.
 
 ### **createKey(): string**
 Creates a new key and returns it encrypted in the format specified in the constructor. (base64 by default)
 
-### FastyCryptSymmetric.createKey(encoding): string (Static Method)
+### **FastyCryptSymmetric.createKey(encoding): string (Static Method)**
 Creates a new key and returns it encrypted in the format specified (base64 by default).
-The **encoding** param accepts the [IFastyCryptEncoding](#fastycrypt-types) type
+The **encoding** param accepts the [IFastyCryptEncoding](#ifastycryptencoding) type
 
 ### **useKey(key): void**
 Specified an secret key to use.
 
-| Parameter |          Type         |
-|-----------|-----------------------|
-|    key    | string or Uint8Array  |
+| Parameter |          Type         | required |
+|-----------|-----------------------|----------|
+|    key    | string or Uint8Array  | true     |
 
-### **FastyCryptSymmetric.from(key, encoding): FastyCryptSymmetric**
+### **FastyCryptSymmetric.from(key, settings): FastyCryptSymmetric**
 It creates an instance of FastyCryptSymmetric and return it.
 
-| Parameter |                  Type                                |  Default |
-|-----------|------------------------------------------------------|----------|
-|    key    |                  string or Uint8Array                | required |
-| encoding  |       [IFastyCryptEncoding](#fastycrypt-types)       |  base64  |
+| Parameter Name  |                      Type                   | Default Value | required |
+|-----------------|---------------------------------------------|---------------|----------|
+|        key      |                   string                    |   undefined   | true     |
+|     settings    |  [ISymmetricSettings](#isymmetricsettings)  |   default     | false    |
 
 ### **encrypt(document): string**
 Encrypt your document using the secret key. The document can be a string or an object suitable for transcribing into JSON format. Returns a string encrypted using the encoding specified in the constructor.
 
-| Parameter         |     Type      |
-|-------------------|---------------|
-| document          | string or any |
+| Parameter         |     Type      | required |
+|-------------------|---------------|----------|
+| document          | string or any | true     |
 
 ### **decrypt(encryptedDocument): string | any**
 Decrypts an encrypted document and returns the original document.<br/>
 Throws an error when the encrypted document does not meet the design characteristics of an encrypted document.
 
-| Parameter        |        Type       |
-|------------------|-------------------|
-| encryptedDocument |       string      |
+| Parameter         |        Type       | required |
+|-------------------|-------------------|----------|
+| encryptedDocument |       string      | true     |
 
-### EXAMPLES FOR SYMMETRIC ENCRYPTION
+### **EXAMPLES FOR SYMMETRIC ENCRYPTION**
 
 Example of use of this encryption method with rehydration of the safe.
 ```js
@@ -621,6 +589,7 @@ console.log('My decrypted secret by rehydration:\n', MyDecryptedSecretByRehydrat
 It allows you to emit signed documents that can be read by anyone. It is a quick and efficient mechanism to issue documents that you do not want them to be modified but read by anyone easily and quickly.
 **We strongly suggest you always sign the documents on the server side and also verify them on the server side**, otherwise, an attacker could extract your signature and issue signed documents through JavaScript injection directly on your website, make sure Do not do it unless it is completely safe. of what you are doing. **Remember that this method is designed so that you or any other person can read and verify that you are you who issued a certain document, but not to hide sensitive content.** If you want to set a secure communication bridge between two subjects, you are looking for the [asymmetric encryption method](#asymmetric-encryption-public-key-encryption).
 <br/>
+
 [Go now to the example](#examples-for-signer-module)
 
 ```js
@@ -633,44 +602,44 @@ If it don't received a keys, it generate it.
 
 | Parameter |                  Type                               | Default      |
 |-----------|-----------------------------------------------------|--------------|
-| encoding  |      [IFastyCryptEncoding](#fastycrypt-types)       |    base64    |
-|   keys    | [IFastyCryptKeys](#fastycryptsigner-types) or string|   optional   |
+| encoding  |      [IFastyCryptEncoding](#ifastycryptencoding)    |    base64    |
+|   keys    | [IFastyCryptKeys](#ifastycryptkeys) or string       |   optional   |
 
-#### NOTE:
+#### **NOTE**:
 if you set keys as string it will considered as publicKey and FastyCrypt going to use it as static subject.
 
-### **get keys: [IFastyCryptPairKeys](#fastycryptsigner-types)**
+### **get keys: [IFastyCryptPairKeys](#ifastycryptpairkeys)**
 Returns the current keys in use.
 
-### **createKeys(): [IFastyCryptPairKeys](#fastycryptsigner-types)**
+### **createKeys(): [IFastyCryptPairKeys](#ifastycryptpairkeys)**
 Creates a new pair of keys and returns it encrypted in the format specified in the constructor. (base64 by default)
 
-### **FastyCryptSymmetric.createKeys(encoding): [IFastyCryptPairKeys](#fastycryptsigner-types)** (Static Method)
+### **FastyCryptSymmetric.createKeys(encoding): [IFastyCryptPairKeys](#ifastycryptpairkeys)** (Static Method)
 Creates a new key and returns it encrypted in the format specified (base64 by default).
 The **encoding** param accepts the [Buffer's encoding list](#the-encodings-param-accepts)
 
 ### **useKeys(keys): void**
 Specified an secret key to use.
 
-| Parameter |                      Type                  |
-|-----------|--------------------------------------------|
-|    keys   | [IFastyCryptKeys](#fastycryptsigner-types) |
+| Parameter |                      Type                  | required |
+|-----------|--------------------------------------------|----------|
+|    keys   | [IFastyCryptKeys](#ifastycryptkeys)        | true     |
 
-### **FastyCryptSymmetric.from(keys, encoding): FastyCryptSigner**
+### **FastyCryptSigner.from(keys, encoding): FastyCryptSigner**
 It creates an instance of FastyCryptSigner and return it.
 
-| Parameter |                  Type                                |  Default |
-|-----------|------------------------------------------------------|----------|
-|    keys   |       [IFastyCryptKeys](#fastycryptsigner-types)     | required |
-|  encoding |        [IFastyCryptEncoding](#fastycrypt-types)      |  base64  |
+| Parameter |                  Type                       |  Default |
+|-----------|---------------------------------------------|----------|
+|    keys   |     [IFastyCryptKeys](#ifastycryptkeys)     | required |
+|  encoding | [IFastyCryptEncoding](#ifastycryptencoding) |  base64  |
 
 ### **sign(document): string**
 Sign your document using the secret key. The document can be a string or an object suitable for transcribing into JSON format.
 Returns a signed document as string using the encoding specified in the constructor.
 
-| Parameter         |     Type      |
-|-------------------|---------------|
-|     document      | string or any |
+| Parameter         |     Type      | required |
+|-------------------|---------------|----------|
+|     document      | string or any | true     |
 
 ### **read(signedDocument, senderPublicKey): any**
 Read a signed document and return the original document and verify if it is legitimate using the sender's public key.<br/>
@@ -695,9 +664,9 @@ create a signature for your document using the secret key.
 The document can be a string or an object suitable for transcribing into JSON format.
 Returns a signature associated with the specified document as a string using the encoding specified in the constructor.
 
-| Parameter         |     Type      |
-|-------------------|---------------|
-|     document      | string or any |
+| Parameter         |     Type      | required |
+|-------------------|---------------|----------|
+|     document      | string or any | false    |
 
 ### **verify(signedDocument, signature, senderPublicKey): boolean**
 Validates the legitimacy of a document using a signature associated with the document and the sender's public key.<br/>
@@ -706,7 +675,7 @@ Throws an error when the signature does not meet the design characteristics of a
 
 | Parameter        |        Type       |  Default |
 |------------------|-------------------|----------|
-| signedDocument |       string      | required |
+| signedDocument   |       string      | required |
 |     signature    |       string      | required |
 | senderPublicKey  |       string      | optional |
 
@@ -717,7 +686,7 @@ Throws an error when the document does not meet the design characteristics of a 
 
 | Parameter        |        Type       |  Default |
 |------------------|-------------------|----------|
-| signedDocument |       string      | required |
+| signedDocument   |       string      | required |
 | senderPublicKey  |       string      | optional |
 
 
@@ -746,7 +715,7 @@ Returns the public key of the static subject as a string in the format of the en
 ### **set staticSubject: string|Uint8Array|null**
 Sets as static the public key of a subject that will be used frequently to avoid the need to specify it every time it is required to read or validate signatures. If you specify it you can still read and validate other subjects' signatures simply by specifying it in the read or verify methods. Additionally you can set it to null to remove this public key, which will cause the default behavior when a sender's public key is not specified to use the current instance's own public key.
 
-### EXAMPLES FOR SIGNER MODULE
+### **EXAMPLES FOR SIGNER MODULE**
 
 Example of use of this encryption method with rehydration of the safe.
 ```js
@@ -825,19 +794,6 @@ Convert a Uint8Array to a JavaScript object or string
 ### **Uint8ToString(input: Uint8Array, encoding: BufferEncoding='base64'): string**
 Converts a Uint8Array to a string using the specified encoding.
 
-#### The **encoding**'s param accepts
-- ascii
-- utf8
-- utf-8
-- utf16le
-- ucs2
-- ucs-2
-- base64
-- base64url
-- latin1
-- binary
-- hex
-
 ### **ObjectToUint8(input: any): Uint8Array**
 Convert a JavaScript object or string to a Uint8Array.
 
@@ -850,12 +806,90 @@ Generates a pseudo-random integer.
 
 ## FastyCrypt Types
 The types that can be accessed by the user are described below.
-|          Type            |                                  Definition                                     |
-|--------------------------|---------------------------------------------------------------------------------|
-|   IFastyCryptPairKeys    |                   {secretKey: string, publicKey:string}                         |
-| IFastyCryptUint8PairKeys |                {secretKey: Uint8Array, publicKey: Uint8Array}                   |
-|     IFastyCryptKeys      |               IFastyCryptPairKeys | IFastyCryptUint8PairKeys                    |
-|    IPaddingSettings      |{stronger?: boolean, minLength?: number, maxLength?: number, dictionary?: string}|
+
+### **IFastyCryptPairKeys**
+```ts
+{
+  secretKey: string,
+  publicKey: string
+}
+```
+
+### **IFastyCryptUint8PairKeys**
+```ts
+{
+  secretKey: Uint8Array;
+  publicKey: Uint8Array;
+}
+```
+
+### **IFastyCryptKeys**
+```ts
+IFastyCryptPairKeys | IFastyCryptUint8PairKeys
+```
+
+### **IPaddingSettings**
+```ts
+{
+  stronger?: boolean,
+  minLength?: number,
+  maxLength?: number,
+  dictionary?: string
+}
+```
+
+### **IFastyCryptEncoding**
+
+```ts
+'base64' | 'binary' | 'hex'
+```
+
+### **IPadding**
+```ts
+{
+  padding: Uint8Array,
+  length: number,
+  lengthCode: Uint8Array
+}
+```
+
+### **IAsymmetricSettings**
+```ts
+{
+  encoding?: IFastyCryptEncoding,
+  keys?: IFastyCryptKeys,
+  paddingSettings?: IPaddingSettings
+}
+```
+
+### **ISymmetricSettings**
+```ts
+{
+  encoding?: IFastyCryptEncoding,
+  key?: string | Uint8Array,
+  paddingSettings?: IPaddingSettings
+}
+```
+
+## **Default Padding Settings**
+```js
+// Clarification:
+// Padding is used to randomize the output size of
+// encrypted messages, which makes the use of strong
+// content for padding unnecessary. In any case, the 
+// use of this function is made available to you if 
+// you consider it necessary, but remember that each
+// message already includes a random component in 
+// itself known as a "nonce" that uses a secure 
+// randomization mechanism.
+
+{
+  stronger: false, // Enable or Disable low collision algorithm
+  minLength: 5, // Set minimum length size for paddings
+  maxLength 22, // Set maximum length size for paddings
+  dictionary: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-' // Padding Default Symbols
+}
+```
 
 ## License
 MIT © [DevPolonio84 <dev.polonio84@gmail.com>](https://github.com/PolonioDev)
