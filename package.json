@@ -66,7 +66,7 @@
     },
     "dependencies": {
         "got": "^12.5.1",
-        "nanoid": "^4.0.0",
+        "nanoid": "^5.0.9",
         "tweetnacl": "^1.0.3"
     },
     "husky": {
