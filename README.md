@@ -2,8 +2,6 @@
   <h1 align="center">⚡️ FastyCrypt 🔒 - Encrypting And Signer</h1>
   <p align="center">
     <img alt="GitHub issues" src="https://img.shields.io/github/issues/PolonioDev/fastycrypt">
-    <img alt="Snyk Vulnerabilities for GitHub Repo" src="https://img.shields.io/snyk/vulnerabilities/github/PolonioDev/fastycrypt">
-    <img alt="GitHub branch checks state" src="https://img.shields.io/github/checks-status/PolonioDev/fastycrypt/master">
     <img alt="GitHub" src="https://img.shields.io/github/license/PolonioDev/fastycrypt">
     <img alt="npm type definitions" src="https://img.shields.io/npm/types/fastycrypt">
   </p>
