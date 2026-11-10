@@ -4,6 +4,7 @@
     <img alt="GitHub issues" src="https://img.shields.io/github/issues/PolonioDev/fastycrypt">
     <img alt="GitHub" src="https://img.shields.io/github/license/PolonioDev/fastycrypt">
     <img alt="npm type definitions" src="https://img.shields.io/npm/types/fastycrypt">
+    <img alt="Visitors" src="https://visitor-badge.laobi.icu/badge?page_id=PolonioDev.fastycrypt&left_text=Visitors&format=true"
   </p>
 </div>
 
