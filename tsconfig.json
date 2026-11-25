@@ -15,10 +15,6 @@
     "allowJs": true,
     "isolatedModules": false
   },
-  "ts-node": {
-    // Tell ts-node CLI to install the --loader automatically, explained below
-    "esm": true
-  },
   "include": ["src"],
   "exclude": ["node_modules", "example"]
 }

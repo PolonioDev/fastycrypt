@@ -1,5 +1,4 @@
-import "mocha";
-import { expect } from 'chai';
+import { beforeAll, describe, expect, it } from 'vitest';
 import box from '../src/asymmetric';
 
 const document = {
@@ -9,7 +8,7 @@ let Bob: box;
 let Alice: box;
 
 describe('Asymmetric [box]', () => {
-  before(()=>{
+  beforeAll(()=>{
     Bob = new box();
     Alice = new box();
   })
@@ -22,14 +21,14 @@ describe('Asymmetric [box]', () => {
     const encryptedDoc = Bob.encrypt(document);
     const obj = Alice.decrypt(encryptedDoc);
     expect(obj, 'The decrypted secret must be equal to the real secret.')
-      .to.be.deep.equals(document);
+      .toEqual(document);
   });
 
   it('box.ephemeralEncrypt and box.ephemeralDecrypt', () => {
     const encryptedDoc = Bob.ephemeralEncrypt(document);
     const obj = Alice.ephemeralDecrypt(encryptedDoc);
     expect(obj, 'The decrypted secret must be equal to the real secret.')
-      .to.be.deep.equals(document);
+      .toEqual(document);
   });
 
   it('box: Occasional Bug Test', () => {
@@ -42,7 +41,7 @@ describe('Asymmetric [box]', () => {
       const CIAEncryptedMessage = CIA.encrypt(CIA_TopSecretMessage);
       const TopSecretMessage = USAPresident.decrypt(CIAEncryptedMessage);
       expect(TopSecretMessage, 'The decrypted secret always must be equal to the real secret.')
-        .to.be.deep.equals(CIA_TopSecretMessage);
+        .toEqual(CIA_TopSecretMessage);
     }
   });
 });

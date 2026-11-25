@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { beforeAll, describe, expect, it } from 'vitest';
 import signer from '../src/signer';
 const document = {
   test: true
@@ -6,7 +6,7 @@ const document = {
 let Bob: signer;
 let Alice: signer;
 describe('Signer [sign]', () => {
-  before(()=>{
+  beforeAll(()=>{
     Bob = new signer();
     Alice = new signer();
   })
@@ -20,14 +20,14 @@ describe('Signer [sign]', () => {
     const signed = Bob.sign(document);
     const obj = Alice.read(signed, Bob.publicKey);
     expect(obj, 'The signed document must be equal to initial document.')
-      .to.be.deep.equals(document);
+      .toEqual(document);
   });
 
   it('signer.sign and signer.read: signer.read should be throw', () => {
     const signed = Bob.sign(document);
     const obj = Alice.read(signed, Alice.publicKey);
     expect(obj, 'The signed document must not be read using the public key of third parties.')
-      .to.be.null;
+      .toBeNull();
   });
 
   it('signer.getSignFor', () => {
@@ -35,27 +35,27 @@ describe('Signer [sign]', () => {
     const signature = Alice.getSignFor(encryptedDoc);
     const isDocumentSignedByBob = Alice.verify(document, signature, Bob.publicKey);
     expect(isDocumentSignedByBob, 'Everyone should be able to obtain a document\'s signature.')
-      .to.be.true;
+      .toBe(true);
   });
 
   it('signer.create vs signer.verify', () => {
     const signature = Bob.create(document);
     const isDocumentSignedByBob = Alice.verify(document, signature, Bob.publicKey);
     expect(isDocumentSignedByBob, 'Everyone should be able to obtain a document\'s signature.')
-      .to.be.true;
+      .toBe(true);
   });
 
   it('signer.verifyDocument', () => {
     const encryptedDoc = Bob.sign(document);
     const isSignedByBob = Alice.verifyDocument(encryptedDoc, Bob.publicKey);
       expect(isSignedByBob, 'Everyone should be able to validate a signature using the owner\'s public key.')
-        .to.be.true;
+        .toBe(true);
   });
 
   it('signer.readAnyway', ()=>{
     const signed = Bob.sign(document);
     const obj = Alice.readAnyway(signed);
     expect(obj, 'The signed document must be equal to initial document.')
-      .to.be.deep.equals(document);
+      .toEqual(document);
   })
 });
