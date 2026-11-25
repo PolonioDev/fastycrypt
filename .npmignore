@@ -4,7 +4,7 @@
 .eslintignore
 .prettier
 mocharc.json
-aqu.config.ts
+tsup.config.ts
 tsconfig.json
 node_modules
 .vscode
