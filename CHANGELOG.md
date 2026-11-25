@@ -21,7 +21,8 @@
 ### Development
 
 - Migrated the 13 existing tests from Mocha and Chai to Vitest, including watch mode and V8 coverage.
-- Replaced Aqu with tsup for builds and watch mode. The build retains the existing ESM and CommonJS entry paths and output filenames, and generates TypeScript declarations.
+- Replaced Aqu with tsup for builds and watch mode. Public import paths are unchanged. The CommonJS build now uses `.cjs` files and bundles Nano ID so `require()` works on supported Node.js versions. The build generates TypeScript declarations for both module formats.
+- In CommonJS, `require('fastycrypt/asymmetric')`, `require('fastycrypt/symmetric')`, and `require('fastycrypt/signer')` return the constructor directly.
 - Added an explicit ESLint configuration for the library and tests so linting can run independently of Aqu.
 - Removed Aqu and its Jest and Babel Core dependency paths from the Yarn lockfile. The npm advisory comparison found 37 package and advisory matches before this step and 23 afterward.
 - Replaced the Yarn lockfile with a pnpm lockfile and workspace configuration. GitHub Actions uses pnpm for frozen installs, Vitest coverage, and builds on Node.js 22 and 24.

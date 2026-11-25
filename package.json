@@ -3,7 +3,7 @@
   "version": "1.1.5",
   "description": "An Wrapper for NaCl Encrypting library. Easy to Learn and Easy to use.",
   "author": "DevPolonio84 <dev.polonio84@gmail.com>",
-  "main": "dist/fastycrypt.cjs.development.js",
+  "main": "dist/fastycrypt.cjs",
   "typings": "dist/fastycrypt.d.ts",
   "license": "MIT",
   "type": "module",
@@ -16,14 +16,26 @@
   ],
   "exports": {
     ".": {
-      "import": "./dist/fastycrypt.esm.js",
-      "require": "./dist/fastycrypt.cjs.development.js",
-      "default": "./dist/fastycrypt.cjs.development.js"
+      "import": {
+        "types": "./dist/fastycrypt.d.ts",
+        "default": "./dist/fastycrypt.esm.js"
+      },
+      "require": {
+        "types": "./dist/fastycrypt.d.cts",
+        "default": "./dist/fastycrypt.cjs"
+      },
+      "default": "./dist/fastycrypt.cjs"
     },
     "./*": {
-      "import": "./dist/*.esm.js",
-      "require": "./dist/*.cjs.development.js",
-      "default": "./dist/*.cjs.development.js"
+      "import": {
+        "types": "./dist/*.d.ts",
+        "default": "./dist/*.esm.js"
+      },
+      "require": {
+        "types": "./dist/*.d.cts",
+        "default": "./dist/*.cjs"
+      },
+      "default": "./dist/*.cjs"
     }
   },
   "typesVersions": {

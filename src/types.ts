@@ -1,6 +1,3 @@
-import { nanoid as NonSecureNanoid } from 'nanoid/non-secure';
-import { nanoid as SecureNanoid } from 'nanoid';
-
 export type IFastyCryptEncoding = 'base64' | 'binary' | 'hex';
 export type IFastyCryptUint8PairKeys = {
   secretKey: Uint8Array;
@@ -20,7 +17,7 @@ export type IPadding = {
   lengthCode: Uint8Array;
 };
 
-export type INanoid = typeof SecureNanoid | typeof NonSecureNanoid;
+export type INanoid = <Type extends string>(size?: number) => Type;
 
 export type IDocumentSegments = {
   nonce: Uint8Array;

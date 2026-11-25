@@ -21,7 +21,8 @@
 ### Desarrollo
 
 - Se migraron las 13 pruebas existentes de Mocha y Chai a Vitest, incluido el modo de observación y la cobertura con V8.
-- Se sustituyó Aqu por tsup para compilar y observar cambios. La compilación conserva las rutas de entrada ESM y CommonJS y los nombres de los archivos generados, y emite declaraciones de TypeScript.
+- Se sustituyó Aqu por tsup para compilar y observar cambios. Se conservan las rutas públicas de importación. La compilación CommonJS ahora genera archivos `.cjs` e incluye Nano ID para que `require()` funcione en las versiones compatibles de Node.js. Se generan declaraciones de TypeScript para ambos formatos.
+- En CommonJS, `require('fastycrypt/asymmetric')`, `require('fastycrypt/symmetric')` y `require('fastycrypt/signer')` devuelven directamente el constructor.
 - Se añadió una configuración explícita de ESLint para la biblioteca y las pruebas, con el fin de ejecutar el análisis de código de forma independiente de Aqu.
 - Se retiraron Aqu y las rutas de dependencias que incorporaban Jest y Babel Core del archivo de bloqueo de Yarn. La comparación con los avisos de npm encontró 37 coincidencias entre paquetes y avisos antes de este paso y 23 después.
 - Se sustituyó el archivo de bloqueo de Yarn por el de pnpm y se añadió la configuración del espacio de trabajo. GitHub Actions usa pnpm para instalar con el archivo de bloqueo, ejecutar la cobertura de Vitest y compilar en Node.js 22 y 24.
