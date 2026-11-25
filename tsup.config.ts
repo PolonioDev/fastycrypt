@@ -18,7 +18,7 @@ export default defineConfig({
   target: 'node14',
   clean: true,
   splitting: false,
-  sourcemap: 'external',
+  sourcemap: true,
   keepNames: true,
   outExtension({ format }) {
     return { js: format === 'esm' ? '.esm.js' : '.cjs.development.js' };
