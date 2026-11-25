@@ -1,5 +1,5 @@
 import { IPaddingSettings, IPaddingSetUp, IPadding, IDocumentSegments } from './types';
-import { nanoid as NonSecureNanoid } from 'nanoid/non-secure';
+import { nanoid as NonSecureNanoid, customAlphabet as NonSecureNanoidFromDictionary } from 'nanoid/non-secure';
 import { nanoid as SecureNanoid, customAlphabet as SecureNanoidFromDictionary } from 'nanoid';
 
 export function Uint8ToObject(input: Uint8Array): unknown {
@@ -70,7 +70,7 @@ export function setupNanoid(settings?: IPaddingSettings): IPaddingSetUp {
     nanoid: stronger ? SecureNanoid : NonSecureNanoid
   };
   if (dictionary)
-    setup.nanoid = stronger ? SecureNanoidFromDictionary(dictionary) : SecureNanoidFromDictionary(dictionary);
+    setup.nanoid = stronger ? SecureNanoidFromDictionary(dictionary) : NonSecureNanoidFromDictionary(dictionary);
 
   return setup;
 }

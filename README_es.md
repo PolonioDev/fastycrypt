@@ -308,7 +308,7 @@ const paddingSettings = {
 };
 ~~~
 
-Puedes definir `dictionary` para usar un alfabeto personalizado.
+Puedes definir `dictionary` para usar un alfabeto personalizado. Con o sin diccionario, `stronger: false` usa `Math.random()` para reducir el coste de generar los caracteres de relleno. Con `stronger: true`, esos caracteres se generan con una fuente de aleatoriedad criptográficamente segura. Esta opción solo afecta a los caracteres de relleno.
 
 ## Licencia
 

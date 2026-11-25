@@ -841,7 +841,7 @@ const paddingSettings = {
 };
 ```
 
-Set `dictionary` to use a custom alphabet.
+Set `dictionary` to use a custom alphabet. With or without a custom alphabet, `stronger: false` uses `Math.random()` for the padding characters to reduce generation cost. Set `stronger: true` to generate those characters with a cryptographically secure random source. This setting applies only to padding characters.
 
 ## License
 MIT © [DevPolonio84 <dev.polonio84@gmail.com>](https://github.com/PolonioDev)
