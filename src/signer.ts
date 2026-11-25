@@ -1,6 +1,7 @@
 import NaCl from 'tweetnacl';
 const { sign } = NaCl;
 
+import { decodeKeyPair, encodeKeyPair } from './key-pair';
 import type { IFastyCryptEncoding, IFastyCryptKeys, IFastyCryptPairKeys, IFastyCryptUint8PairKeys } from './types';
 import { EncodingToUint8, ObjectToUint8, Uint8ToEncoding, Uint8ToObject } from './utils';
 
@@ -72,36 +73,14 @@ export default class FastyCryptSigner {
   }
 
   protected set Uint8PairKeys(keys: IFastyCryptUint8PairKeys) {
-    const { publicKey, secretKey } = keys;
-    const { publicKeyLength, secretKeyLength } = sign;
-
-    const SignerEncodedKeys: IFastyCryptPairKeys = {
-      secretKey: Uint8ToEncoding(secretKey, this.encoding),
-      publicKey: Uint8ToEncoding(publicKey, this.encoding)
-    };
-    const SignerKeys = keys as IFastyCryptUint8PairKeys;
-
-    if (publicKey.length !== publicKeyLength || secretKey.length !== secretKeyLength)
-      throw new Error(
-        'Your keys are invalid, please, use an valid keys or execute "createKeys" method to create a new keys.'
-      );
-
-    this.SignerKeys = SignerKeys;
-    this.SignerEncodedKeys = SignerEncodedKeys;
+    const encodedKeys = encodeKeyPair(keys, this.encoding, sign);
+    this.SignerKeys = keys;
+    this.SignerEncodedKeys = encodedKeys;
   }
 
   set keys(keys: IFastyCryptKeys) {
-    const { publicKey, secretKey } = keys;
-    if (typeof publicKey === 'string' && typeof secretKey === 'string') {
-      const Uint8Keys: IFastyCryptUint8PairKeys = {
-        secretKey: EncodingToUint8(secretKey, this.encoding),
-        publicKey: EncodingToUint8(publicKey, this.encoding)
-      };
-      this.Uint8PairKeys = Uint8Keys;
-    }
-    if (typeof publicKey === 'object' && typeof secretKey === 'object') {
-      this.Uint8PairKeys = keys as IFastyCryptUint8PairKeys;
-    }
+    const decodedKeys = decodeKeyPair(keys, this.encoding);
+    if (decodedKeys) this.Uint8PairKeys = decodedKeys;
   }
 
   useKeys(keys: IFastyCryptKeys | string): void {
