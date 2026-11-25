@@ -80,7 +80,7 @@ export default class FastyCryptAsymmetric {
   }
 
   static from(keys: IFastyCryptKeys, settings?: IAsymmetricSettings): FastyCryptAsymmetric {
-    return new FastyCryptAsymmetric({ keys, ...(settings ?? {}) });
+    return new FastyCryptAsymmetric({ keys, ...settings });
   }
 
   get keys() {

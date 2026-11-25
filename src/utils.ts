@@ -99,7 +99,7 @@ export function Uint8From(
 
 export function segmentDocument(document: Uint8Array, nonceLength: number): IDocumentSegments {
   const paddingLengthCode = Uint8ToString(document.subarray(0, 2));
-  const paddingLength = parseInt(paddingLengthCode);
+  const paddingLength = Number.parseInt(paddingLengthCode);
   const minDocumentLength = 2 + paddingLength + nonceLength;
 
   if (!Number.isNaN(paddingLength) && document.length > minDocumentLength) {
