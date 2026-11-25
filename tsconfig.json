@@ -4,6 +4,7 @@
     "module": "ES2022",
     "declaration": true,
     "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "lib": ["ES2022"],
     "noLib": false,
