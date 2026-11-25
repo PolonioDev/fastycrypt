@@ -21,7 +21,7 @@ FastyCrypt does the hard work for you. We know you need to protect data, and we 
 FastyCrypt abstracts you from using data of type Uint8Array and implements methods so that you only have to worry about your main task, encrypting and decrypting messages, in addition to this allows you to not worry about using JSON, since internally FastyCrypt converts encryption entries to JSON format and returns it to you in the same way you have encrypted it, this means that no matter if it is a text or not, FastyCrypt knows how to work with both and does so without you having to do anything extra. If you are new to working with symmetric or asymmetric encryption FastyCrypt is your best option because it is designed to be easy to understand, easy to use and easy to implement, in addition to using TweetNaCl, it guarantees you an impressive speed and security. Are you anxious? Let's learn it!
 
 ## Contents
-- [QuickStart](#quickstart-🔒⚡️)
+- [QuickStart](#quickstart)
   - [Installation](#installation)
   - [Usage](#usage)
 - [Asymmetric Encryption (Public Key Encryption)](#asymmetric-encryption-public-key-encryption)
@@ -29,12 +29,12 @@ FastyCrypt abstracts you from using data of type Uint8Array and implements metho
   - [get keys: IFastyCryptPairKeys](#keys-ifastycryptpairkeys)
   - [createKeys()](#createkeys-ifastycryptpairkeys)
   - [FastyCryptAsymmetric.createKeys(encoding)](#fastycryptasymmetriccreatekeysencoding-static-method)
-  - [useKey(keys)](#usekeyskeys-void)
+  - [useKeys(keys)](#usekeyskeys-void)
   - [FastyCryptAsymmetric.from(keys, settings)](#fastycryptasymmetricfromkeys-settings-fastycryptasymmetric)
   - [encrypt(document, receiverPublicKey)](#encryptdocument-receiverpublickey-string)
-  - [decrypt(encryptedDocument, senderPublicKey)](#decryptencrypteddocument-senderpublickey-string--any)
+  - [decrypt(encryptedDocument, senderPublicKey)](#decryptencrypteddocument-senderpublickey-unknown)
   - [ephemeralEncrypt(document, receiverPublicKey)](#ephemeralencryptdocument-receiverpublickey-string)
-  - [ephemeralDecrypt(encryptedDocument)](#ephemeraldecryptencrypteddocument-string--any)
+  - [ephemeralDecrypt(encryptedDocument)](#ephemeraldecryptencrypteddocument-unknown)
   - [get Uint8PublicKey: Uint8Array](#get-uint8publickey-uint8array)
   - [get Uint8SecretKey: Uint8Array](#get-uint8secretkey-uint8array)
   - [get Uint8StaticSubject: Uint8Array](#get-uint8staticsubject-uint8array)
@@ -45,37 +45,37 @@ FastyCrypt abstracts you from using data of type Uint8Array and implements metho
   - [Examples](#examples-for-asymmetric-encryption)
 - [Symmetric Encryption](#symmetric-encryption)
   - [new FastyCryptSymmetric(settings)](#new-fastycryptsymmetricsettings)
-  - [get key: string](#get-key-string)
+  - [get secretKey: string](#get-secretkey-string-1)
   - [createKey(): string](#createkey-string)
   - [FastyCryptSymmetric.createKey(encoding)](#fastycryptsymmetriccreatekeyencoding-string-static-method)
   - [useKey(key)](#usekeykey-void)
   - [FastyCryptSymmetric.from(key, settings)](#fastycryptsymmetricfromkey-settings-fastycryptsymmetric)
   - [encrypt(document)](#encryptdocument-string)
-  - [decrypt(encryptedDocument)](#decryptencrypteddocument-string--any)
+  - [decrypt(encryptedDocument)](#decryptencrypteddocument-unknown)
   - [Examples](#examples-for-symmetric-encryption)
 - [Document Signer](#document-signer)
-  - [new FastyCryptSign(encoding, key)](#new-fastycryptsignencoding-key)
+  - [new FastyCryptSigner(encoding, keys)](#new-fastycryptsignerencoding-keys)
   - [get keys: IFastyCryptPairKeys](#get-keys-ifastycryptpairkeys)
   - [createKeys()](#createkeys-ifastycryptpairkeys)
-  - [FastyCryptSymmetric.createKeys(encoding)](#fastycryptsymmetriccreatekeysencoding-ifastycryptpairkeys-static-method)
+  - [FastyCryptSigner.createKeys(encoding)](#fastycryptsignercreatekeysencoding-ifastycryptpairkeys-static-method)
   - [useKeys(keys)](#usekeyskeys-void-1)
   - [FastyCryptSigner.from(keys, encoding)](#fastycryptsignerfromkeys-encoding-fastycryptsigner)
   - [sign(document)](#signdocument-string)
-  - [read(signedDocument, senderPublicKey)](#readsigneddocument-senderPublicKey-any)
+  - [read(signedDocument, senderPublicKey)](#readsigneddocument-senderpublickey-unknown)
   - [readAnyway(signedDocument): any](#readanywaysigneddocument-any)
   - [create(document)](#createdocument-string)
-  - [verify(signedDocument, signature, senderPublicKey)](#verifysigneddocument-signature-senderpublickey-boolean)
-  - [verifyDocument(signedDocument, signature, senderPublicKey)](#verifydocumentsigneddocument-signature-senderpublickey-boolean)
+  - [verify(document, signature, senderPublicKey)](#verifydocument-signature-senderpublickey-boolean)
+  - [verifyDocument(signedDocument, senderPublicKey)](#verifydocumentsigneddocument-senderpublickey-boolean)
   - [getSignFor(signedDocument)](#getsignforsigneddocument-string)
   - [get Uint8PublicKey: Uint8Array](#get-uint8publickey-uint8array-1)
   - [get Uint8SecretKey: Uint8Array](#get-uint8secretkey-uint8array-1)
   - [get Uint8StaticSubject: Uint8Array](#get-uint8staticsubject-uint8array-1)
   - [get publicKey: string](#get-publickey-string-1)
-  - [get secretKey: string](#get-secretkey-string-1)
+  - [get secretKey: string](#get-secretkey-string-2)
   - [get staticSubject: string](#get-staticsubject-string-1)
   - [set staticSubject: string|Uint8Array|null](#set-staticsubject-stringuint8arraynull-1)
 #
-## QuickStart 🔒⚡️
+## QuickStart
 
 ### Installation
 
@@ -97,7 +97,7 @@ import FastyCrypt from 'fastycrypt';
 
 const FastyCryptAsymmetric = FastyCrypt.box;
 const FastyCryptSymmetric = FastyCrypt.secretbox;
-const FastyCryptSigner = FastyCrypt.sign;
+const FastyCryptSigner = FastyCrypt.signer;
 ```
 #### Asymmetric entry
 ```js
@@ -116,9 +116,7 @@ import FastyCryptSigner from 'fastycrypt/signer';
 
 ## Asymmetric Encryption (Public Key Encryption)
 
-It allows you to encrypt and decrypt messages using a public key that you can share in insecure environments, such as a web client or REST API. The messages can also be candidate objects to be transformed into JSON format, these objects in combination with the plain texts in this module are called documents. By using this encryption method, it creates a secure means of communication where each document is protected, signed by the sender and addressed to a single recipient, if the document is modified in the slightest, the document is corrupted and cannot be decrypted, indicating that the received document was not written by the intended sender.<br/>
-This implementation has some additional functions with respect to TweetNaCl, among them I tried a high-level api to send messages with disposable encoding, different nonce for each message and padding to add more security, the padding is used to generate output of random lengths.
-<br/>
+Standard asymmetric encryption uses the sender's secret key and the recipient's public key. Decryption uses the recipient's secret key and the sender's public key. Obtain the peer's public key through a trusted channel. FastyCrypt generates a fresh nonce for each encryption and supports configurable padding.
 
 [Go now to the example](#examples-for-asymmetric-encryption)
 
@@ -141,10 +139,10 @@ By default, FastCrypt uses the recommended settings for padding.
 Returns the current keys in use.
 
 ### **createKeys(): [IFastyCryptPairKeys](#ifastycryptpairkeys)**
-Creates a pair of new keys and returns them encrypted in the format specified in the constructor.
+Creates a pair of new keys and returns them encoded in the format specified in the constructor.
 
 ### **FastyCryptAsymmetric.createKeys(encoding)** (Static Method)
-Creates a pair of new keys and returns them encrypted in the format specified (base64 by default).
+Creates a pair of new keys and returns them encoded in the format specified (base64 by default).
 
 ### **useKeys(keys): void**
 Specified an Key or Keys to use.
@@ -167,20 +165,20 @@ It creates an instance of FastyCryptAsymmetric and return it.
 
 ### **encrypt(document, receiverPublicKey): string**
 Encrypt your document using the recipient's public key. The document can be a string or an object suitable for transcribing into JSON format. Returns a string encrypted using the encoding specified in the constructor.<br/>
-It throws an error when secretKey is not specified.
+Supply the recipient's public key explicitly or configure it with `staticSubject`.
 
 | Parameter         |     Type      | required |
 |-------------------|---------------|----------|
-| document          | string or any | true     |
+| document          | unknown       | true     |
 | receiverPublicKey |     string    | false    |
 
 **NOTE:**
 If you don't specify the "receiverPublicKey" parameter it will try to use the value you
 specified when you set staticSubject setter. <br/>
 
-### **decrypt(encryptedDocument, senderPublicKey): string | any**
+### **decrypt(encryptedDocument, senderPublicKey): unknown**
 It decrypts an encrypted document and returns the original document.<br/>
-It throws an error when secretKey is not specified.
+Supply the sender's public key explicitly or configure it with `staticSubject`. A failed authentication returns `null`.
 
 |  Parameter        |        Type       | required |
 |-------------------|-------------------|----------|
@@ -196,20 +194,20 @@ It encrypts your document using a disposable key pair (they change with each mes
 and the recipient's public key. The document can be a string or an object suitable
 for transcribing into JSON format. You can set the public key of the re Returns a
 string encrypted using the encoding specified in the constructor.<br/>
-It throws an error when secretKey is not specified.
+The sender generates a temporary key pair for each message. The recipient can decrypt the message using its own secret key.
 
 | Parameter         |     Type      | required |
 |-------------------|---------------|----------|
-| document          | string or any | false    |
+| document          | unknown       | true     |
 | receiverPublicKey |     string    | false    |
 
 **NOTE:**
 If you don't specify the "receiverPublicKey" parameter it will try to use the value you
 specified when you set staticSubject setter. <br/>
 
-### **ephemeralDecrypt(encryptedDocument): string | any**
+### **ephemeralDecrypt(encryptedDocument): unknown**
 It decrypts an encrypted document and returns the original document.<br/>
-It throws an error when secretKey is not specified.
+The recipient uses the temporary public key included in the message. Use a separate signature when the recipient must verify a known sender's identity.
 
 | Parameter        |        Type       | required |
 |------------------|-------------------|----------|
@@ -228,7 +226,7 @@ Returns the secret key of the instance as a string in the format of the encoding
 ### **get staticSubject: string**
 Returns the public key of the static subject as a string in the format of the encoding specified in the constructor.
 ### **set staticSubject: string|Uint8Array|null**
-Sets as static the public key of a subject that will be used frequently to avoid the need to specify it every time it is required to read or validate signatures. If you specify it you can still read and validate other subjects' signatures simply by specifying it in the read or verify methods. Additionally you can set it to null to remove this public key, which will cause the default behavior when a sender's public key is not specified to use the current instance's own public key.
+Sets the default public key for the peer. Set it to `null` to clear it. Supply the peer's public key explicitly on later operations that require it.
 
 ### **EXAMPLES FOR ASYMMETRIC ENCRYPTION**
 
@@ -504,14 +502,14 @@ If it don't received a key, it generate it.
 | paddingSettings |  [IPaddingSettings](#ipaddingsettings)    |[default](#default-padding-settings)| false    |
 
 
-### **get key: string**
+### **get secretKey: string**
 Returns the current key in use.
 
 ### **createKey(): string**
-Creates a new key and returns it encrypted in the format specified in the constructor. (base64 by default)
+Creates a new key and returns it encoded in the format specified in the constructor. (base64 by default)
 
 ### **FastyCryptSymmetric.createKey(encoding): string (Static Method)**
-Creates a new key and returns it encrypted in the format specified (base64 by default).
+Creates a new key and returns it encoded in the format specified (base64 by default).
 The **encoding** param accepts the [IFastyCryptEncoding](#ifastycryptencoding) type
 
 ### **useKey(key): void**
@@ -534,9 +532,9 @@ Encrypt your document using the secret key. The document can be a string or an o
 
 | Parameter         |     Type      | required |
 |-------------------|---------------|----------|
-| document          | string or any | true     |
+| document          | unknown       | true     |
 
-### **decrypt(encryptedDocument): string | any**
+### **decrypt(encryptedDocument): unknown**
 Decrypts an encrypted document and returns the original document.<br/>
 Throws an error when the encrypted document does not meet the design characteristics of an encrypted document.
 
@@ -556,7 +554,7 @@ const MySecret = {
   password: 'bob&aliceloveforever'
 };
 
-console.log('Keep it in a safe place:\n', Safe.secretKey);
+// Store Safe.secretKey in your secret manager.
 
 const MyEncryptedSecret = Safe.encrypt(MySecret);
 console.log('My encrypted secret:\n', MyEncryptedSecret);
@@ -570,9 +568,6 @@ const MyDecryptedSecretByRehydration = RehydratedSafe.decrypt(MyEncryptedSecret)
 console.log('My decrypted secret by rehydration:\n', MyDecryptedSecretByRehydration);
 
 // File Output
-
-// Keep it in a safe place:
-//  IwPFd3w6shvDpWywwqpAU9nNweJukI4kwwfL5gy4Cno=
 
 // My encrypted secret:
 //  MTRg7ciIUn7WHCYoiWqPrq/by9DI2XrSk55gsKDTI549V2LX3i3uSKa32Ne2V+SQGLTSX8eSjbCQa1JxCnwdnUpltNBy1FUwgjCUA8I8l+TEhWMcpJrYyMjzMZZK2hylX8aTOrLVQdyf1XAYnn/IcKok4KmKVTeaWF0iMq6cvJXF3pV+6EwVWA==
@@ -594,10 +589,10 @@ It allows you to emit signed documents that can be read by anyone. It is a quick
 [Go now to the example](#examples-for-signer-module)
 
 ```js
-import FastyCryptSign from 'fastycrypt/sign';
+import FastyCryptSigner from 'fastycrypt/signer';
 ```
 
-### **new FastyCryptSign(encoding, key)**
+### **new FastyCryptSigner(encoding, keys)**
 The constructor method allows you to establish data that is repetitive in the signature and reading process.
 If it don't received a keys, it generate it.
 
@@ -613,11 +608,11 @@ if you set keys as string it will considered as publicKey and FastyCrypt going t
 Returns the current keys in use.
 
 ### **createKeys(): [IFastyCryptPairKeys](#ifastycryptpairkeys)**
-Creates a new pair of keys and returns it encrypted in the format specified in the constructor. (base64 by default)
+Creates a new pair of keys and returns it encoded in the format specified in the constructor. (base64 by default)
 
-### **FastyCryptSymmetric.createKeys(encoding): [IFastyCryptPairKeys](#ifastycryptpairkeys)** (Static Method)
-Creates a new key and returns it encrypted in the format specified (base64 by default).
-The **encoding** param accepts the [Buffer's encoding list](#the-encodings-param-accepts)
+### **FastyCryptSigner.createKeys(encoding): [IFastyCryptPairKeys](#ifastycryptpairkeys)** (Static Method)
+Creates a new key and returns it encoded in the format specified (base64 by default).
+The **encoding** param accepts the [IFastyCryptEncoding](#ifastycryptencoding)
 
 ### **useKeys(keys): void**
 Specified an secret key to use.
@@ -640,9 +635,9 @@ Returns a signed document as string using the encoding specified in the construc
 
 | Parameter         |     Type      | required |
 |-------------------|---------------|----------|
-|     document      | string or any | true     |
+|     document      | unknown       | true     |
 
-### **read(signedDocument, senderPublicKey): any**
+### **read(signedDocument, senderPublicKey): unknown**
 Read a signed document and return the original document and verify if it is legitimate using the sender's public key.<br/>
 If the sender's public key is not specified, it will try to use the specified static subject's public key and as a last resort it will be interpreted that an own document is being tried, so the instance's public key will be used.<br/>
 Throws an error when the document does not meet the minimum design characteristics of a signed document.
@@ -667,20 +662,20 @@ Returns a signature associated with the specified document as a string using the
 
 | Parameter         |     Type      | required |
 |-------------------|---------------|----------|
-|     document      | string or any | false    |
+|     document      | unknown       | true     |
 
-### **verify(signedDocument, signature, senderPublicKey): boolean**
+### **verify(document, signature, senderPublicKey): boolean**
 Validates the legitimacy of a document using a signature associated with the document and the sender's public key.<br/>
 If the public key of the sender is not specified, it will try to use the public key of the specified static subject and as a last resort it will be interpreted that it is trying to validate its own document, so the public key of the instance will be used to validate it.< br/>
 Throws an error when the signature does not meet the design characteristics of a signature.
 
 | Parameter        |        Type       |  Default |
 |------------------|-------------------|----------|
-| signedDocument   |       string      | required |
+| document         |      unknown      | required |
 |     signature    |       string      | required |
 | senderPublicKey  |       string      | optional |
 
-### **verifyDocument(signedDocument, signature, senderPublicKey): boolean**
+### **verifyDocument(signedDocument, senderPublicKey): boolean**
 Validates the legitimacy of a signed document using the sender's public key.<br/>
 If the public key of the sender is not specified, it will try to use the public key of the specified static subject and as a last resort it will be interpreted that it is trying to validate its own document, so the public key of the instance will be used to validate it.< br/>
 Throws an error when the document does not meet the design characteristics of a signed document.
@@ -718,62 +713,19 @@ Sets as static the public key of a subject that will be used frequently to avoid
 
 ### **EXAMPLES FOR SIGNER MODULE**
 
-Example of use of this encryption method with rehydration of the safe.
 ```js
-import { StringToUint8, Uint8ToString } from 'fastycrypt/utils';
 import FastyCryptSigner from 'fastycrypt/signer';
 
-// The USA President create your own Signer Instance
-const USAPresident = new FastyCryptSigner();
-const RealDocument = 'My brothers are coming!';
+const sender = new FastyCryptSigner();
+const receiver = new FastyCryptSigner();
+const document = { message: 'Hello' };
 
-let PresidentSignedDocument = USAPresident.sign(RealDocument);
-// Alice is an person like you an i
-const Alice = new FastyCryptSigner();
-// Alice try to read the President's Document and validate it
-console.log('Is this document signed by the president?', Alice.verifyDocument(PresidentSignedDocument, USAPresident.publicKey));
-console.log('Document:', Alice.read(PresidentSignedDocument, USAPresident.publicKey));
+const signed = sender.sign(document);
+const verified = receiver.verifyDocument(signed, sender.publicKey);
+const recovered = receiver.read(signed, sender.publicKey);
 
-// Trying to hack it
-  const hacker = new FastyCryptSigner();
-
-  // Hacker try to change the document and sign it
-  // Hacker try change the document of the president to 'Aliens are coming!'
-  let modifiedDocument = RealDocument.replace('My brothers', 'Aliens');
-  let hackedDocument = hacker.sign(modifiedDocument);
-
-
-  // Alice try to read the Hacker's Document and validate it
-  // Hacker fail...
-  console.log('Is this document signed by the president?', Alice.verifyDocument(hackedDocument, USAPresident.publicKey));
-  console.log('Hacked Document:', Alice.read(hackedDocument, USAPresident.publicKey));
-
-  // Hacker try to falsify the document again
-  // try to change the document of the president to 'Aliens are coming!'
-  modifiedDocument = RealDocument.replace('My brothers', 'Aliens');
-  // and falsify the signature of the president
-  let PresidentSignature = hacker.getSignFor(PresidentSignedDocument) as string;
-  // Hacker build the falsified document
-  const Uint8PresidentSignature = StringToUint8(PresidentSignature);
-  const Uint8ModifiedDocument = StringToUint8(modifiedDocument, 'ascii');
-  hackedDocument = Uint8ToString(Uint8Array.from([...Uint8PresidentSignature, ...Uint8ModifiedDocument]));
-
-  // Alice try to read the Hacker's Document and validate it
-  // Hacker fail, again
-  console.log('Is this document signed by the president?', Alice.verifyDocument(hackedDocument, USAPresident.publicKey));
-  console.log('Hacked Document:', Alice.read(hackedDocument, USAPresident.publicKey));
-
-
-
-// File Output
-// Is this document signed by the president? true
-// Document: My brothers are coming!
-
-// Is this document signed by the president? false
-// Hacked Document: null
-
-// Is this document signed by the president? false
-// Hacked Document: null
+const signature = sender.create(document);
+const valid = receiver.verify(document, signature, sender.publicKey);
 ```
 
 ## Utilities Module
@@ -789,17 +741,17 @@ Node.js
 const FastyCryptUtils = require('fastycrypt/utils');
 ```
 
-### **Uint8ToObject(input: Uint8Array): any**
+### **Uint8ToObject(input: Uint8Array): unknown**
 Convert a Uint8Array to a JavaScript object or string
 
-### **Uint8ToString(input: Uint8Array, encoding: BufferEncoding='base64'): string**
-Converts a Uint8Array to a string using the specified encoding.
+### **Uint8ToString(input: Uint8Array): string**
+Decodes a Uint8Array as UTF-8 text. Use `Uint8ToEncoding()` for base64 or hex.
 
-### **ObjectToUint8(input: any): Uint8Array**
+### **ObjectToUint8(input: unknown): Uint8Array**
 Convert a JavaScript object or string to a Uint8Array.
 
-### **StringToUint8(input: string, encoding: BufferEncoding='base64'): Uint8Array**
-Converts a string using the specified encoding to a Uint8Array.
+### **StringToUint8(input: string): Uint8Array**
+Encodes UTF-8 text as a Uint8Array. Use `EncodingToUint8()` to decode a base64 or hex string.
 
 ### **random_int(min: number, max:number): number***
 Generates a pseudo-random integer.
@@ -873,24 +825,18 @@ IFastyCryptPairKeys | IFastyCryptUint8PairKeys
 ```
 
 ## **Default Padding Settings**
-```js
-// Clarification:
-// Padding is used to randomize the output size of
-// encrypted messages, which makes the use of strong
-// content for padding unnecessary. In any case, the 
-// use of this function is made available to you if 
-// you consider it necessary, but remember that each
-// message already includes a random component in 
-// itself known as a "nonce" that uses a secure 
-// randomization mechanism.
 
-{
-  stronger: false, // Enable or Disable low collision algorithm
-  minLength: 5, // Set minimum length size for paddings
-  maxLength 22, // Set maximum length size for paddings
-  dictionary: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_-' // Padding Default Symbols
-}
+Padding varies the length of the encrypted output. FastyCrypt generates the nonce independently.
+
+```js
+const paddingSettings = {
+  stronger: false,
+  minLength: 5,
+  maxLength: 22
+};
 ```
+
+Set `dictionary` to use a custom alphabet.
 
 ## License
 MIT © [DevPolonio84 <dev.polonio84@gmail.com>](https://github.com/PolonioDev)
