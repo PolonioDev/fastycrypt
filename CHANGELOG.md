@@ -4,6 +4,10 @@
 
 ## Release 1.1.5 (Unreleased)
 
+### Document signing
+
+- Added `readUnverified()` to extract the contents of a signed document without verifying its signature. Deprecated `readAnyway()` as an alias with the same behavior. It is scheduled for removal in v2.
+
 ### Breaking changes for TypeScript consumers
 
 - `decrypt()` (symmetric and asymmetric), `ephemeralDecrypt()`, `read()`, `readAnyway()`, and `utils.Uint8ToObject()` now return `unknown` instead of `any`. Narrow the decoded value or assert its type before accessing its properties. The runtime values and ciphertext format are unchanged.

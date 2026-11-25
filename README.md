@@ -62,7 +62,8 @@ FastyCrypt abstracts you from using data of type Uint8Array and implements metho
   - [FastyCryptSigner.from(keys, encoding)](#fastycryptsignerfromkeys-encoding-fastycryptsigner)
   - [sign(document)](#signdocument-string)
   - [read(signedDocument, senderPublicKey)](#readsigneddocument-senderpublickey-unknown)
-  - [readAnyway(signedDocument): any](#readanywaysigneddocument-any)
+  - [readUnverified(signedDocument)](#readunverifiedsigneddocument-unknown)
+  - [readAnyway(signedDocument)](#readanywaysigneddocument-unknown)
   - [create(document)](#createdocument-string)
   - [verify(document, signature, senderPublicKey)](#verifydocument-signature-senderpublickey-boolean)
   - [verifyDocument(signedDocument, senderPublicKey)](#verifydocumentsigneddocument-senderpublickey-boolean)
@@ -647,13 +648,17 @@ Throws an error when the document does not meet the minimum design characteristi
 | signedDocument  |       string      | required |
 | senderPublicKey |       string      | optional |
 
-### **readAnyway(signedDocument): any**
-Read a signed document without verifying if the author is legitimate.<br/>
-Throws an error when the document does not meet the minimum design characteristics of a signed document.
+### **readUnverified(signedDocument): unknown**
 
-|  Parameter        |        Type       |  Default |
-|-------------------|-------------------|----------|
-|   signedDocument  |       string      | required |
+Extracts the contents of an encoded signed document. A malformed input can raise an error.
+
+> [!WARNING]
+> This method skips signature verification. Treat the returned value as unauthenticated. Use `read()` with a trusted sender public key to verify the signature before using the contents.
+
+### **readAnyway(signedDocument): unknown**
+
+> [!NOTE]
+> Deprecated in 1.1.5. Use `readUnverified()` for the same behavior. This alias is scheduled for removal in v2.
 
 ### **create(document): string**
 create a signature for your document using the secret key.

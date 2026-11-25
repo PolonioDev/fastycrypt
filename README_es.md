@@ -186,7 +186,8 @@ La firma permite comprobar la integridad de un documento y su autoría mediante 
 | --- | --- |
 | `sign(document)` | Devuelve un documento firmado que incluye su contenido y su firma. |
 | `read(signedDocument, senderPublicKey?)` | Verifica la firma y recupera el documento. Devuelve `null` si la firma carece de validez. |
-| `readAnyway(signedDocument)` | Extrae el contenido del documento firmado sin verificar su firma. |
+| `readUnverified(signedDocument)` | Extrae el contenido del documento firmado sin verificar su firma. Devuelve `unknown`. |
+| `readAnyway(signedDocument)` | Alias obsoleto de `readUnverified()` que se retirará en v2. |
 | `create(document)` | Devuelve una firma separada del documento original. |
 | `verify(document, signature, senderPublicKey?)` | Comprueba una firma separada contra el documento original y devuelve un booleano. |
 | `verifyDocument(signedDocument, senderPublicKey?)` | Comprueba la firma incluida en el documento y devuelve un booleano. |
@@ -195,7 +196,7 @@ La firma permite comprobar la integridad de un documento y su autoría mediante 
 Si omites `senderPublicKey`, los métodos de verificación usan `staticSubject` y, si falta, la clave pública de la instancia. Una entrada mal formada puede provocar un error.
 
 > [!WARNING]
-> Trata el resultado de `readAnyway()` como contenido sin autenticar.
+> Trata el resultado de `readUnverified()` y `readAnyway()` como contenido sin autenticar. Usa `read()` con la clave pública de confianza del remitente para verificar la firma antes de usar el contenido.
 
 ### Ejemplo de firma y verificación
 

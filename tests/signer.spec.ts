@@ -47,9 +47,16 @@ describe('Signer [sign]', () => {
     expect(isSignedByBob, "Everyone should be able to validate a signature using the owner's public key.").toBe(true);
   });
 
-  it('signer.readAnyway', () => {
+  it('reads unverified content through both method names', () => {
     const signed = Bob.sign(document);
-    const obj = Alice.readAnyway(signed);
-    expect(obj, 'The signed document must be equal to initial document.').toEqual(document);
+    const reader = new signer();
+    expect(reader.read(signed)).toBeNull();
+    expect(reader.readUnverified(signed)).toEqual(document);
+    expect(reader.readAnyway(signed)).toEqual(document);
+  });
+
+  it('rejects a malformed document through both method names', () => {
+    expect(() => Alice.readUnverified('')).toThrow('Invalid Signed Document');
+    expect(() => Alice.readAnyway('')).toThrow('Invalid Signed Document');
   });
 });

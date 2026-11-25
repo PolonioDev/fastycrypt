@@ -142,10 +142,16 @@ export default class FastyCryptSigner {
     return document ? Uint8ToObject(document) : null;
   }
 
-  readAnyway(signedDocument: string): unknown {
+  /** Extracts the document without verifying its signature. */
+  readUnverified(signedDocument: string): unknown {
     if (signedDocument.length <= sign.signatureLength) throw new Error('Invalid Signed Document');
     const document = EncodingToUint8(signedDocument, this.encoding).subarray(sign.signatureLength);
     return Uint8ToObject(document);
+  }
+
+  /** @deprecated Use readUnverified() instead. Scheduled for removal in v2. */
+  readAnyway(signedDocument: string): unknown {
+    return this.readUnverified(signedDocument);
   }
 
   create(document: unknown): string {

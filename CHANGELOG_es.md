@@ -4,6 +4,10 @@
 
 ## Versión 1.1.5 (sin publicar)
 
+### Firma de documentos
+
+- Se añadió `readUnverified()` para extraer el contenido de un documento firmado sin verificar su firma. `readAnyway()` queda obsoleto y conserva su comportamiento como alias hasta su retirada prevista en v2.
+
 ### Cambios incompatibles para consumidores de TypeScript
 
 - `decrypt()` (simétrico y asimétrico), `ephemeralDecrypt()`, `read()`, `readAnyway()` y `utils.Uint8ToObject()` ahora devuelven `unknown` en lugar de `any`. Comprueba o declara el tipo del valor decodificado antes de acceder a sus propiedades. Los valores en ejecución y el formato de los mensajes cifrados se mantienen.
