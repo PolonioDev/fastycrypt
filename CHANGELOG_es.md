@@ -2,14 +2,15 @@
 
 [English](CHANGELOG.md)
 
-## Versión 1.1.5 (sin publicar)
+## Versión 1.1.5 — Actualización de seguridad y herramientas
 
 ### Firma de documentos
 
 - Se añadió `readUnverified()` para extraer el contenido de un documento firmado sin verificar su firma. `readAnyway()` queda obsoleto y conserva su comportamiento como alias hasta su retirada prevista en v2.
 
-### Cambios incompatibles para consumidores de TypeScript
+### Cambios incompatibles
 
+- Node.js 14 deja de ser compatible. Nano ID `5.1.16` requiere Web Crypto y declara compatibilidad con Node.js 18.x o 20 en adelante.
 - `decrypt()` (simétrico y asimétrico), `ephemeralDecrypt()`, `read()`, `readAnyway()` y `utils.Uint8ToObject()` ahora devuelven `unknown` en lugar de `any`. Comprueba o declara el tipo del valor decodificado antes de acceder a sus propiedades. Los valores en ejecución y el formato de los mensajes cifrados se mantienen.
 
 ### Seguridad
