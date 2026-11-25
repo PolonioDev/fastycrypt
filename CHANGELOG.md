@@ -1,4 +1,17 @@
 # FASTYCRYPT CHANGELOG
+
+[Español](CHANGELOG_es.md)
+
+## Release 1.1.5 (Unreleased)
+
+### Development
+
+- Migrated the 13 existing tests from Mocha and Chai to Vitest, including watch mode and V8 coverage.
+- Replaced Aqu with tsup for builds and watch mode. The package keeps its existing ESM and CommonJS entry paths, output filenames, and TypeScript declarations.
+- Added an explicit ESLint configuration for the library and tests so linting can run independently of Aqu.
+- Removed Aqu and its Jest and Babel Core dependency paths from the Yarn lockfile. The npm advisory comparison found 37 package and advisory matches before this step and 23 afterward.
+- Added a pnpm lockfile and workspace configuration alongside the existing Yarn lockfile.
+
 ---
 ## **Release 1.1.4**:  *Maintenance Update*
 ### **User Features**

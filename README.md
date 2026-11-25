@@ -8,6 +8,8 @@
   </p>
 </div>
 
+[Español](README_es.md)
+
 ## What is FastyCrypt? ⚡️
 FastyCrypt is a wrapper for the TweetNaCl.js module with additional features.
 It allows you to encrypt and decrypt data using symmetrical and asymmetric encryption (also known as public key encryption) and additionally allows you to sign documents so that anyone can read them and verify if they are legitimate documents of the issuer.
