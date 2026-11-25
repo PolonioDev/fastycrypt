@@ -4,13 +4,24 @@
 
 ## Release 1.1.5 (Unreleased)
 
+### Breaking changes for TypeScript consumers
+
+- `decrypt()` (symmetric and asymmetric), `ephemeralDecrypt()`, `read()`, `readAnyway()`, and `utils.Uint8ToObject()` now return `unknown` instead of `any`. Narrow the decoded value or assert its type before accessing its properties. The runtime values and ciphertext format are unchanged.
+
+### Security
+
+- Removed the unused production dependency `got` and the development tools `np`, `lint-staged`, and Size Limit. Removed their related scripts and configuration.
+- Configured pnpm to resolve tsup's esbuild dependency to a patched version. The updated lockfile resolves `esbuild` to `0.28.2`.
+
 ### Development
 
 - Migrated the 13 existing tests from Mocha and Chai to Vitest, including watch mode and V8 coverage.
-- Replaced Aqu with tsup for builds and watch mode. The package keeps its existing ESM and CommonJS entry paths, output filenames, and TypeScript declarations.
+- Replaced Aqu with tsup for builds and watch mode. The build retains the existing ESM and CommonJS entry paths and output filenames, and generates TypeScript declarations.
 - Added an explicit ESLint configuration for the library and tests so linting can run independently of Aqu.
 - Removed Aqu and its Jest and Babel Core dependency paths from the Yarn lockfile. The npm advisory comparison found 37 package and advisory matches before this step and 23 afterward.
-- Added a pnpm lockfile and workspace configuration alongside the existing Yarn lockfile.
+- Replaced the Yarn lockfile with a pnpm lockfile and workspace configuration. GitHub Actions uses pnpm for frozen installs, Vitest coverage, and builds on Node.js 22 and 24.
+- Updated `@types/node` to 22.x to satisfy the Vite and Vitest peer requirements.
+- Standardized formatting across the source, tests, and configuration. ESLint also checks tooling files and enforces LF line endings. TypeScript checks for consistent casing in import paths.
 
 ---
 ## **Release 1.1.4**:  *Maintenance Update*

@@ -6,20 +6,18 @@ const document = {
 let Bob: secretbox;
 let Alice: secretbox;
 describe('Symmetric [secretbox]', () => {
-  beforeAll(()=>{
+  beforeAll(() => {
     Bob = new secretbox();
     Alice = new secretbox();
-  })
+  });
 
   it('secretbox.encrypt and secretbox.decrypt', () => {
     const encryptedDoc = Bob.encrypt(document);
     let obj = Bob.decrypt(encryptedDoc);
-    expect(obj, 'The secret must be decrypted by the owner.')
-      .toEqual(document);
+    expect(obj, 'The secret must be decrypted by the owner.').toEqual(document);
 
     obj = Alice.decrypt(encryptedDoc);
-    expect(obj, 'The secret must not be decrypted by third parties.')
-      .toBeNull();
+    expect(obj, 'The secret must not be decrypted by third parties.').toBeNull();
   });
 
   it('secretbox: Occasional Bug Test', () => {
@@ -31,8 +29,7 @@ describe('Symmetric [secretbox]', () => {
       };
       const MyEncryptedSecret = Safe.encrypt(MySecret);
       const MyDecryptedSecret = Safe.decrypt(MyEncryptedSecret);
-      expect(MyDecryptedSecret, 'The decrypted secret always must be equal to the real secret.')
-        .toEqual(MySecret);
+      expect(MyDecryptedSecret, 'The decrypted secret always must be equal to the real secret.').toEqual(MySecret);
     }
   });
 });

@@ -8,12 +8,12 @@ const entry = {
   symmetric: 'src/symmetric.ts',
   signer: 'src/signer.ts',
   types: 'src/types.ts',
-  utils: 'src/utils.ts',
+  utils: 'src/utils.ts'
 };
 
 export default defineConfig({
   entry,
-  format: ['esm', 'cjs'],
+  format: [ 'esm', 'cjs' ],
   platform: 'node',
   target: 'node14',
   clean: true,
@@ -26,14 +26,10 @@ export default defineConfig({
   async onSuccess() {
     // Keep the bundled declarations and filenames used by the published API.
     const bundles = generateDtsBundle(
-      Object.values(entry).map((filePath) => ({ filePath })),
-      { preferredConfigPath: 'tsconfig.json' },
+      Object.values(entry).map(filePath => ({ filePath })),
+      { preferredConfigPath: 'tsconfig.json' }
     );
 
-    await Promise.all(
-      Object.keys(entry).map((name, index) =>
-        writeFile(`dist/${name}.d.ts`, bundles[index]),
-      ),
-    );
-  },
+    await Promise.all(Object.keys(entry).map((name, index) => writeFile(`dist/${name}.d.ts`, bundles[ index ])));
+  }
 });

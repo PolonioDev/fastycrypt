@@ -1,5 +1,5 @@
 import { nanoid as NonSecureNanoid } from 'nanoid/non-secure';
-import { nanoid as SecureNanoid} from 'nanoid';
+import { nanoid as SecureNanoid } from 'nanoid';
 
 export type IFastyCryptEncoding = 'base64' | 'binary' | 'hex';
 export type IFastyCryptUint8PairKeys = {
@@ -9,39 +9,39 @@ export type IFastyCryptUint8PairKeys = {
 export type IFastyCryptPairKeys = { secretKey: string; publicKey: string };
 export type IFastyCryptKeys = IFastyCryptPairKeys | IFastyCryptUint8PairKeys;
 export type IPaddingSettings = {
-  stronger?: boolean,
-  minLength?: number,
-  maxLength?: number,
-  dictionary?: string
+  stronger?: boolean;
+  minLength?: number;
+  maxLength?: number;
+  dictionary?: string;
 };
 export type IPadding = {
-  padding: Uint8Array,
-  length: number,
-  lengthCode: Uint8Array
-}
+  padding: Uint8Array;
+  length: number;
+  lengthCode: Uint8Array;
+};
 
-export type INanoid = typeof SecureNanoid|typeof NonSecureNanoid;
+export type INanoid = typeof SecureNanoid | typeof NonSecureNanoid;
 
 export type IDocumentSegments = {
-  nonce: Uint8Array,
-  paddingLength: number,
-  encryptedDoc: Uint8Array
+  nonce: Uint8Array;
+  paddingLength: number;
+  encryptedDoc: Uint8Array;
 };
 
 export type IPaddingSetUp = {
-  minLength: number,
-  maxLength: number,
-  nanoid: INanoid
+  minLength: number;
+  maxLength: number;
+  nanoid: INanoid;
 };
 
 export type IAsymmetricSettings = {
-  encoding?: IFastyCryptEncoding,
-  keys?: IFastyCryptKeys,
-  paddingSettings?: IPaddingSettings
+  encoding?: IFastyCryptEncoding;
+  keys?: IFastyCryptKeys;
+  paddingSettings?: IPaddingSettings;
 };
 
 export type ISymmetricSettings = {
-  encoding?: IFastyCryptEncoding,
-  key?: string | Uint8Array,
-  paddingSettings?: IPaddingSettings
+  encoding?: IFastyCryptEncoding;
+  key?: string | Uint8Array;
+  paddingSettings?: IPaddingSettings;
 };

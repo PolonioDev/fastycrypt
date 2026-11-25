@@ -4,13 +4,24 @@
 
 ## Versión 1.1.5 (sin publicar)
 
+### Cambios incompatibles para consumidores de TypeScript
+
+- `decrypt()` (simétrico y asimétrico), `ephemeralDecrypt()`, `read()`, `readAnyway()` y `utils.Uint8ToObject()` ahora devuelven `unknown` en lugar de `any`. Comprueba o declara el tipo del valor decodificado antes de acceder a sus propiedades. Los valores en ejecución y el formato de los mensajes cifrados se mantienen.
+
+### Seguridad
+
+- Se retiraron la dependencia de producción `got`, que la biblioteca no usaba, y las herramientas de desarrollo `np`, `lint-staged` y Size Limit, junto con sus scripts y configuraciones.
+- Se configuró pnpm para que tsup use una versión corregida de esbuild. El archivo de bloqueo actualizado resuelve `esbuild` a `0.28.2`.
+
 ### Desarrollo
 
 - Se migraron las 13 pruebas existentes de Mocha y Chai a Vitest, incluido el modo de observación y la cobertura con V8.
-- Se sustituyó Aqu por tsup para compilar y observar cambios. El paquete conserva sus rutas de entrada ESM y CommonJS, los nombres de los archivos generados y las declaraciones de TypeScript.
+- Se sustituyó Aqu por tsup para compilar y observar cambios. La compilación conserva las rutas de entrada ESM y CommonJS y los nombres de los archivos generados, y emite declaraciones de TypeScript.
 - Se añadió una configuración explícita de ESLint para la biblioteca y las pruebas, con el fin de ejecutar el análisis de código de forma independiente de Aqu.
 - Se retiraron Aqu y las rutas de dependencias que incorporaban Jest y Babel Core del archivo de bloqueo de Yarn. La comparación con los avisos de npm encontró 37 coincidencias entre paquetes y avisos antes de este paso y 23 después.
-- Se añadieron un archivo de bloqueo y una configuración de espacio de trabajo para pnpm junto al archivo de bloqueo existente de Yarn.
+- Se sustituyó el archivo de bloqueo de Yarn por el de pnpm y se añadió la configuración del espacio de trabajo. GitHub Actions usa pnpm para instalar con el archivo de bloqueo, ejecutar la cobertura de Vitest y compilar en Node.js 22 y 24.
+- Se actualizó `@types/node` a la rama 22.x para cumplir los requisitos de Vite y Vitest.
+- Se unificó el formato del código, las pruebas y la configuración. ESLint también revisa los archivos de herramientas y exige finales de línea LF. TypeScript comprueba que las mayúsculas y minúsculas de las rutas de importación coincidan con los nombres de archivo.
 
 ---
 

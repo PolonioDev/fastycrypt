@@ -6,56 +6,50 @@ const document = {
 let Bob: signer;
 let Alice: signer;
 describe('Signer [sign]', () => {
-  beforeAll(()=>{
+  beforeAll(() => {
     Bob = new signer();
     Alice = new signer();
-  })
+  });
 
-  it('signer.staticSubject should be works', ()=> {
+  it('signer.staticSubject should be works', () => {
     Bob.staticSubject = Alice.publicKey;
     Alice.staticSubject = Bob.publicKey;
-  })
+  });
 
   it('signer.sign and signer.read should not throw', () => {
     const signed = Bob.sign(document);
     const obj = Alice.read(signed, Bob.publicKey);
-    expect(obj, 'The signed document must be equal to initial document.')
-      .toEqual(document);
+    expect(obj, 'The signed document must be equal to initial document.').toEqual(document);
   });
 
   it('signer.sign and signer.read: signer.read should be throw', () => {
     const signed = Bob.sign(document);
     const obj = Alice.read(signed, Alice.publicKey);
-    expect(obj, 'The signed document must not be read using the public key of third parties.')
-      .toBeNull();
+    expect(obj, 'The signed document must not be read using the public key of third parties.').toBeNull();
   });
 
   it('signer.getSignFor', () => {
     const encryptedDoc = Bob.sign(document);
     const signature = Alice.getSignFor(encryptedDoc);
     const isDocumentSignedByBob = Alice.verify(document, signature, Bob.publicKey);
-    expect(isDocumentSignedByBob, 'Everyone should be able to obtain a document\'s signature.')
-      .toBe(true);
+    expect(isDocumentSignedByBob, "Everyone should be able to obtain a document's signature.").toBe(true);
   });
 
   it('signer.create vs signer.verify', () => {
     const signature = Bob.create(document);
     const isDocumentSignedByBob = Alice.verify(document, signature, Bob.publicKey);
-    expect(isDocumentSignedByBob, 'Everyone should be able to obtain a document\'s signature.')
-      .toBe(true);
+    expect(isDocumentSignedByBob, "Everyone should be able to obtain a document's signature.").toBe(true);
   });
 
   it('signer.verifyDocument', () => {
     const encryptedDoc = Bob.sign(document);
     const isSignedByBob = Alice.verifyDocument(encryptedDoc, Bob.publicKey);
-      expect(isSignedByBob, 'Everyone should be able to validate a signature using the owner\'s public key.')
-        .toBe(true);
+    expect(isSignedByBob, "Everyone should be able to validate a signature using the owner's public key.").toBe(true);
   });
 
-  it('signer.readAnyway', ()=>{
+  it('signer.readAnyway', () => {
     const signed = Bob.sign(document);
     const obj = Alice.readAnyway(signed);
-    expect(obj, 'The signed document must be equal to initial document.')
-      .toEqual(document);
-  })
+    expect(obj, 'The signed document must be equal to initial document.').toEqual(document);
+  });
 });

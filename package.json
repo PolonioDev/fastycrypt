@@ -1,63 +1,63 @@
 {
-    "name": "fastycrypt",
-    "version": "1.1.4",
-    "description": "An Wrapper for NaCl Encrypting library. Easy to Learn and Easy to use.",
-    "author": "DevPolonio84 <dev.polonio84@gmail.com>",
-    "main": "dist/fastycrypt.cjs.development.js",
-    "typings": "dist/fastycrypt.d.ts",
-    "license": "MIT",
-    "type": "module",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/PolonioDev/fastycrypt.git"
+  "name": "fastycrypt",
+  "version": "1.1.4",
+  "description": "An Wrapper for NaCl Encrypting library. Easy to Learn and Easy to use.",
+  "author": "DevPolonio84 <dev.polonio84@gmail.com>",
+  "main": "dist/fastycrypt.cjs.development.js",
+  "typings": "dist/fastycrypt.d.ts",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PolonioDev/fastycrypt.git"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/fastycrypt.esm.js",
+      "require": "./dist/fastycrypt.cjs.development.js",
+      "default": "./dist/fastycrypt.cjs.development.js"
     },
-    "files": [
-        "dist"
-    ],
-    "exports": {
-        ".": {
-            "import": "./dist/fastycrypt.esm.js",
-            "require": "./dist/fastycrypt.cjs.development.js",
-            "default": "./dist/fastycrypt.cjs.development.js"
-        },
-        "./*": {
-            "import": "./dist/*.esm.js",
-            "require": "./dist/*.cjs.development.js",
-            "default": "./dist/*.cjs.development.js"
-        }
-    },
-    "typesVersions": {
-        "*": {
-            "*": [
-                "dist/*.d.ts"
-            ]
-        }
-    },
-    "scripts": {
-        "build": "tsup",
-        "start": "tsup --watch",
-        "lint": "eslint src tests",
-        "lint:fix": "eslint src tests --fix",
-        "test": "vitest run",
-        "dev": "vitest watch",
-        "test:watch": "vitest watch",
-        "test:coverage": "vitest run --coverage",
-        "prepare": "tsup"
-    },
-    "devDependencies": {
-        "@types/node": "^22.0.0",
-        "@vitest/coverage-v8": "4.1.12",
-        "dts-bundle-generator": "^6.13.0",
-        "eslint": "^10.0.0",
-        "husky": "^8.0.1",
-        "tsup": "8.5.1",
-        "typescript": "^4.8.4",
-        "typescript-eslint": "^8.0.0",
-        "vite": "^8.0.0",
-        "vitest": "4.1.12"
-    },
-    "dependencies": {
-        "nanoid": "^5.0.9",
-        "tweetnacl": "^1.0.3"
+    "./*": {
+      "import": "./dist/*.esm.js",
+      "require": "./dist/*.cjs.development.js",
+      "default": "./dist/*.cjs.development.js"
     }
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "dist/*.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "start": "tsup --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "dev": "vitest watch",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "prepare": "tsup"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "4.1.12",
+    "dts-bundle-generator": "^6.13.0",
+    "eslint": "^10.0.0",
+    "husky": "^8.0.1",
+    "tsup": "8.5.1",
+    "typescript": "^4.8.4",
+    "typescript-eslint": "^8.0.0",
+    "vite": "^8.0.0",
+    "vitest": "4.1.12"
+  },
+  "dependencies": {
+    "nanoid": "^5.0.9",
+    "tweetnacl": "^1.0.3"
+  }
 }

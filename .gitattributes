@@ -1,5 +1,10 @@
 # All files are checked into the repo with LF
 * text=auto
+*.js text eol=lf
+*.cjs text eol=lf
+*.mjs text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
 
 # These files are checked out using CRLF locally
 *.bat eol=lf
